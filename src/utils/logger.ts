@@ -138,19 +138,24 @@ export function createServiceLogger(
 
 /**
  * Build pino logger options for stdout output.
- * All logging goes to stdout for container-based deployments (OpenShift/Docker).
+ * Dev: pino-pretty for human-readable logs.
+ * Prod: raw JSON to stdout for container log aggregators (OpenShift/Docker).
  */
 export function createLoggerConfig(): LoggerOptions {
+  const isDev = process.env.NODE_ENV !== 'production'
+
   return {
     level: 'info',
-    transport: {
-      target: 'pino-pretty',
-      options: {
-        translateTime: 'SYS:yyyy-mm-dd HH:MM:ss Z',
-        ignore: 'pid,hostname',
-        colorize: true,
+    ...(isDev && {
+      transport: {
+        target: 'pino-pretty',
+        options: {
+          translateTime: 'SYS:yyyy-mm-dd HH:MM:ss Z',
+          ignore: 'pid,hostname',
+          colorize: true,
+        },
       },
-    },
+    }),
     serializers: {
       req: createRequestSerializer(),
       error: createErrorSerializer(),
