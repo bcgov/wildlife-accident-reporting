@@ -1,9 +1,8 @@
+import { createDatabase } from '@services/database/create-database.js'
 import type { DB } from '@services/database/types/database.js'
-import { SQL } from 'bun'
 import type { FastifyInstance } from 'fastify'
 import fp from 'fastify-plugin'
-import { Kysely } from 'kysely'
-import { PostgresJSDialect } from 'kysely-postgres-js'
+import type { Kysely } from 'kysely'
 
 declare module 'fastify' {
   interface FastifyInstance {
@@ -15,19 +14,14 @@ export default fp(
   async (fastify: FastifyInstance) => {
     const { config } = fastify
 
-    const db = new Kysely<DB>({
-      dialect: new PostgresJSDialect({
-        postgres: config.databaseUrl
-          ? new SQL(config.databaseUrl)
-          : new SQL({
-              hostname: config.dbHost,
-              port: config.dbPort,
-              username: config.dbUser,
-              password: config.dbPassword,
-              database: config.dbName,
-              max: 10,
-            }),
-      }),
+    const db = createDatabase({
+      url: config.databaseUrl,
+      hostname: config.dbHost,
+      port: config.dbPort,
+      username: config.dbUser,
+      password: config.dbPassword,
+      database: config.dbName,
+      max: config.dbPoolSize,
     })
 
     fastify.decorate('db', db)

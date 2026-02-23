@@ -8,6 +8,7 @@ export interface Config {
   dbUser: string
   dbPassword: string
   databaseUrl: string
+  dbPoolSize: number
   logLevel: string
   closeGraceDelay: number
   rateLimitMax: number

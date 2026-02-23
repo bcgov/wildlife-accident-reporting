@@ -1,9 +1,8 @@
 import { promises as fs } from 'node:fs'
 import * as path from 'node:path'
+import { createDatabase } from '@services/database/create-database.js'
 import type { DB } from '@services/database/types/database.js'
-import { SQL } from 'bun'
-import { FileMigrationProvider, Kysely, Migrator, sql } from 'kysely'
-import { PostgresJSDialect } from 'kysely-postgres-js'
+import { FileMigrationProvider, type Kysely, Migrator, sql } from 'kysely'
 
 declare global {
   var __testDb: Kysely<DB> | null
@@ -21,18 +20,9 @@ export async function initializeTestDatabase(): Promise<Kysely<DB>> {
     return globalThis.__testDb
   }
 
-  globalThis.__testDb = new Kysely<DB>({
-    dialect: new PostgresJSDialect({
-      postgres: process.env.TEST_DATABASE_URL
-        ? new SQL(process.env.TEST_DATABASE_URL)
-        : new SQL({
-            hostname: process.env.DB_HOST || 'localhost',
-            port: Number(process.env.DB_PORT) || 5432,
-            username: process.env.DB_USER || 'postgres',
-            password: process.env.DB_PASSWORD || 'postgres',
-            database: process.env.DB_NAME || 'wars_test',
-          }),
-    }),
+  globalThis.__testDb = createDatabase({
+    url: process.env.TEST_DATABASE_URL,
+    database: 'wars_test',
   })
 
   const migrator = new Migrator({

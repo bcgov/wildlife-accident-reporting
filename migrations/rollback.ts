@@ -1,22 +1,9 @@
 import { promises as fs } from 'node:fs'
 import * as path from 'node:path'
-import { SQL } from 'bun'
-import { FileMigrationProvider, Kysely, Migrator } from 'kysely'
-import { PostgresJSDialect } from 'kysely-postgres-js'
+import { FileMigrationProvider, Migrator } from 'kysely'
+import { createDatabase } from '../src/services/database/create-database.js'
 
-const db = new Kysely({
-  dialect: new PostgresJSDialect({
-    postgres: process.env.DATABASE_URL
-      ? new SQL(process.env.DATABASE_URL)
-      : new SQL({
-          hostname: process.env.DB_HOST || 'localhost',
-          port: Number(process.env.DB_PORT) || 5432,
-          username: process.env.DB_USER || 'postgres',
-          password: process.env.DB_PASSWORD || 'postgres',
-          database: process.env.DB_NAME || 'wars',
-        }),
-  }),
-})
+const db = createDatabase()
 
 const migrator = new Migrator({
   db,

@@ -43,6 +43,10 @@ const schema = {
       type: 'string',
       default: '',
     },
+    DB_POOL_SIZE: {
+      type: 'number',
+      default: 20,
+    },
     LOG_LEVEL: {
       type: 'string',
       enum: ['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent'],
@@ -70,6 +74,7 @@ interface RawEnv {
   DB_USER: string
   DB_PASSWORD: string
   DATABASE_URL: string
+  DB_POOL_SIZE: number
   LOG_LEVEL: string
   CLOSE_GRACE_DELAY: number
   RATE_LIMIT_MAX: number
@@ -106,6 +111,7 @@ export default fp(
       dbUser: raw.DB_USER,
       dbPassword: raw.DB_PASSWORD,
       databaseUrl: raw.DATABASE_URL,
+      dbPoolSize: raw.DB_POOL_SIZE,
       logLevel: raw.LOG_LEVEL,
       closeGraceDelay: raw.CLOSE_GRACE_DELAY,
       rateLimitMax: raw.RATE_LIMIT_MAX,

@@ -399,6 +399,9 @@ pyrightconfig.json
 **/*.p12
 **/*.pfx
 
+# Production seed data (sensitive)
+data/seed/
+
 # Scratch/template reference (not part of the project)
 tmp/
 
