@@ -1,6 +1,5 @@
 import { HealthCheckResponseSchema } from '@schemas/health/health.schema.js'
 import type { FastifyPluginAsyncZodOpenApi } from 'fastify-zod-openapi'
-import { sql } from 'kysely'
 
 const plugin: FastifyPluginAsyncZodOpenApi = async (fastify) => {
   fastify.get(
@@ -24,7 +23,7 @@ const plugin: FastifyPluginAsyncZodOpenApi = async (fastify) => {
       let dbStatus: 'ok' | 'failed' = 'ok'
 
       try {
-        await sql`SELECT 1`.execute(fastify.db)
+        await fastify.db.healthCheck()
       } catch (error) {
         fastify.log.error(
           { error },
