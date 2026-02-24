@@ -28,6 +28,7 @@ export default {
         manualChunks: {
           'react-vendor': ['react', 'react-dom', 'react-router-dom'],
           'ui-vendor': ['lucide-react'],
+          map: ['maplibre-gl'],
           query: ['@tanstack/react-query'],
           table: ['@tanstack/react-table'],
           charts: ['recharts'],

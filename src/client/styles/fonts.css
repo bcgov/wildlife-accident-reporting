@@ -1,2 +1,53 @@
-/* Custom fonts can be added here */
-/* System fonts are used by default via globals.css */
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 400;
+  src:
+    url("@bcgov/bc-sans/fonts/BCSans-Regular.woff2") format("woff2"),
+    url("@bcgov/bc-sans/fonts/BCSans-Regular.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 400;
+  src:
+    url("@bcgov/bc-sans/fonts/BCSans-Italic.woff2") format("woff2"),
+    url("@bcgov/bc-sans/fonts/BCSans-Italic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 700;
+  src:
+    url("@bcgov/bc-sans/fonts/BCSans-Bold.woff2") format("woff2"),
+    url("@bcgov/bc-sans/fonts/BCSans-Bold.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 700;
+  src:
+    url("@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff2") format("woff2"),
+    url("@bcgov/bc-sans/fonts/BCSans-BoldItalic.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: normal;
+  font-weight: 300;
+  src:
+    url("@bcgov/bc-sans/fonts/BCSans-Light.woff2") format("woff2"),
+    url("@bcgov/bc-sans/fonts/BCSans-Light.woff") format("woff");
+}
+
+@font-face {
+  font-family: "BC Sans";
+  font-style: italic;
+  font-weight: 300;
+  src:
+    url("@bcgov/bc-sans/fonts/BCSans-LightItalic.woff2") format("woff2"),
+    url("@bcgov/bc-sans/fonts/BCSans-LightItalic.woff") format("woff");
+}

@@ -83,7 +83,8 @@
           },
           "suspicious": {
             "noExplicitAny": "off",
-            "noArrayIndexKey": "off"
+            "noArrayIndexKey": "off",
+            "noShadowRestrictedNames": "off"
           },
           "a11y": {
             "noSvgWithoutTitle": "off",
