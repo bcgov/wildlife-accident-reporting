@@ -5,6 +5,7 @@ import {
   IncidentsResponseSchema,
 } from '@schemas/incidents/incidents.schema.js'
 import { logRouteError } from '@utils/route-errors.js'
+import { sendGzipped } from '@utils/send-gzipped.js'
 import type { FastifyPluginAsyncZodOpenApi } from 'fastify-zod-openapi'
 
 const plugin: FastifyPluginAsyncZodOpenApi = async (fastify) => {
@@ -26,13 +27,24 @@ const plugin: FastifyPluginAsyncZodOpenApi = async (fastify) => {
     },
     async (request, reply) => {
       try {
+        const cached = fastify.responseCache.get(request.url)
+        if (cached) {
+          return sendGzipped(reply, cached)
+        }
+
         const result = await fastify.db.findIncidents(request.query)
-        return {
+        const body = {
           data: result.data,
           total: result.total,
           limit: request.query.limit,
           offset: request.query.offset,
         }
+        const compressed = fastify.responseCache.set(
+          request.url,
+          JSON.stringify(body),
+        )
+
+        return sendGzipped(reply, compressed)
       } catch (error) {
         logRouteError(fastify.log, request, error, {
           message: 'Failed to query incidents',
