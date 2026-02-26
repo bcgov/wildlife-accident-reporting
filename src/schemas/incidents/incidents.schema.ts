@@ -73,14 +73,16 @@ export const IncidentsQuerySchema = z
     species: commaNumbers.optional().meta({
       override: {
         type: 'string',
-        description: 'Comma-separated list of species IDs (e.g. 10,18)',
+        description:
+          'Comma-separated species IDs from GET /v1/incidents/filters',
         example: '10,18',
       },
     }),
     serviceArea: commaNumbers.optional().meta({
       override: {
         type: 'string',
-        description: 'Comma-separated list of service area IDs (e.g. 16,17)',
+        description:
+          'Comma-separated service area IDs from GET /v1/incidents/filters',
         example: '16,17',
       },
     }),
@@ -90,8 +92,8 @@ export const IncidentsQuerySchema = z
       .meta({
         override: {
           type: 'string',
-          description: 'Comma-separated list: MALE, FEMALE, UNKNOWN',
-          example: 'MALE,FEMALE',
+          description: 'Comma-separated values: MALE, FEMALE, UNKNOWN',
+          example: 'MALE,FEMALE,UNKNOWN',
         },
       }),
     timeOfKill: commaStrings
@@ -100,8 +102,8 @@ export const IncidentsQuerySchema = z
       .meta({
         override: {
           type: 'string',
-          description: 'Comma-separated list: DAY, DAWN, DUSK, DARK, UNKNOWN',
-          example: 'DAY,DAWN',
+          description: 'Comma-separated values: DAY, DAWN, DUSK, DARK, UNKNOWN',
+          example: 'DAY,DAWN,DUSK,DARK,UNKNOWN',
         },
       }),
     age: commaStrings
@@ -110,8 +112,8 @@ export const IncidentsQuerySchema = z
       .meta({
         override: {
           type: 'string',
-          description: 'Comma-separated list: ADULT, YOUNG, UNKNOWN',
-          example: 'ADULT,YOUNG',
+          description: 'Comma-separated values: ADULT, YOUNG, UNKNOWN',
+          example: 'ADULT,YOUNG,UNKNOWN',
         },
       }),
     startDate: z.iso.date().optional().meta({
