@@ -1,5 +1,6 @@
 import { format, parseISO } from 'date-fns'
 import { CalendarIcon, RotateCcw } from 'lucide-react'
+import { NavUser } from '@/components/nav-user'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
 import { MultiSelect } from '@/components/ui/multi-select'
@@ -264,6 +265,7 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           {incidents?.total.toLocaleString() ?? '...'} observations match
           current filters
         </p>
+        <NavUser />
       </SidebarFooter>
     </Sidebar>
   )
