@@ -20,5 +20,6 @@ export function toIncident(row: IncidentRow): Incident {
     latitude: row.latitude != null ? Number(row.latitude) : null,
     longitude: row.longitude != null ? Number(row.longitude) : null,
     nearestTown: row.nearest_town,
+    comments: row.comments ?? 'None',
   }
 }

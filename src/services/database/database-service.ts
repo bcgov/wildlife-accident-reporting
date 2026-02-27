@@ -97,6 +97,7 @@ export class DatabaseService {
         'wi.latitude',
         'wi.longitude',
         'wi.nearest_town',
+        'wi.comments',
       ])
       .orderBy('wi.accident_date', 'desc')
 

@@ -6,11 +6,12 @@ import {
   MapPopup,
   Map as MapView,
 } from '@/components/ui/map'
+import { IncidentPopup } from './components/incident-popup'
 import { ZoomToLocation } from './components/zoom-to-location'
 import { useIncidents } from './hooks/use-incidents'
 import { speciesIcons } from './lib/species-icons'
 
-type IncidentProperties = {
+export type IncidentProperties = {
   id: number
   speciesName: string
   speciesColor: string
@@ -23,6 +24,8 @@ type IncidentProperties = {
   quantity: number
   nearestTown: string | null
   serviceAreaName: string | null
+  contractAreaNumber: number | null
+  comments: string
 }
 
 type SelectedIncident = {
@@ -59,6 +62,8 @@ function toGeoJSON(
           quantity: i.quantity,
           nearestTown: i.nearestTown,
           serviceAreaName: i.serviceAreaName,
+          contractAreaNumber: i.contractAreaNumber,
+          comments: i.comments,
         },
       })),
   }
@@ -106,42 +111,12 @@ export function Component() {
           longitude={selected.coordinates[0]}
           latitude={selected.coordinates[1]}
           onClose={() => setSelected(null)}
-          closeButton
         >
-          <div className="flex flex-col gap-1 pr-4">
-            <p className="font-medium text-sm">
-              {selected.properties.speciesName}
-            </p>
-            {selected.properties.nearestTown && (
-              <p className="text-xs text-muted-foreground">
-                Near {selected.properties.nearestTown}
-              </p>
-            )}
-            {selected.properties.accidentDate && (
-              <p className="text-xs text-muted-foreground">
-                {new Date(selected.properties.accidentDate).toLocaleDateString(
-                  undefined,
-                  { timeZone: 'UTC' },
-                )}
-              </p>
-            )}
-            <div className="flex gap-2 text-xs text-muted-foreground">
-              {selected.properties.sex && (
-                <span>{selected.properties.sex}</span>
-              )}
-              {selected.properties.age && (
-                <span>{selected.properties.age}</span>
-              )}
-              {selected.properties.timeOfKill && (
-                <span>{selected.properties.timeOfKill}</span>
-              )}
-            </div>
-            {selected.properties.serviceAreaName && (
-              <p className="text-xs text-muted-foreground">
-                {selected.properties.serviceAreaName}
-              </p>
-            )}
-          </div>
+          <IncidentPopup
+            properties={selected.properties}
+            coordinates={selected.coordinates}
+            onClose={() => setSelected(null)}
+          />
         </MapPopup>
       )}
     </MapView>

@@ -157,6 +157,7 @@ export const IncidentSchema = z
     latitude: z.number().nullable(),
     longitude: z.number().nullable(),
     nearestTown: z.string().nullable(),
+    comments: z.string(),
   })
   .meta({ id: 'Incident', description: 'A wildlife-vehicle collision record' })
 

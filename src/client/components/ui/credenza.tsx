@@ -1,4 +1,4 @@
-import type * as React from 'react'
+import { createContext, type ReactNode, use } from 'react'
 import {
   Dialog,
   DialogClose,
@@ -22,8 +22,10 @@ import {
 import { useIsMobile } from '@/hooks/use-mobile'
 import { cn } from '@/lib/utils'
 
+const CredenzaContext = createContext<boolean>(false)
+
 interface BaseProps {
-  children: React.ReactNode
+  children: ReactNode
 }
 
 interface RootCredenzaProps extends BaseProps {
@@ -41,14 +43,16 @@ function Credenza({ children, open, onOpenChange }: RootCredenzaProps) {
   const Component = isMobile ? Drawer : Dialog
 
   return (
-    <Component open={open} onOpenChange={onOpenChange}>
-      {children}
-    </Component>
+    <CredenzaContext value={isMobile}>
+      <Component open={open} onOpenChange={onOpenChange}>
+        {children}
+      </Component>
+    </CredenzaContext>
   )
 }
 
 function CredenzaTrigger({ className, children, ...props }: CredenzaProps) {
-  const isMobile = useIsMobile()
+  const isMobile = use(CredenzaContext)
   const Component = isMobile ? DrawerTrigger : DialogTrigger
 
   return (
@@ -59,7 +63,7 @@ function CredenzaTrigger({ className, children, ...props }: CredenzaProps) {
 }
 
 function CredenzaClose({ className, children, ...props }: CredenzaProps) {
-  const isMobile = useIsMobile()
+  const isMobile = use(CredenzaContext)
   const Component = isMobile ? DrawerClose : DialogClose
 
   return (
@@ -70,7 +74,7 @@ function CredenzaClose({ className, children, ...props }: CredenzaProps) {
 }
 
 function CredenzaContent({ className, children, ...props }: CredenzaProps) {
-  const isMobile = useIsMobile()
+  const isMobile = use(CredenzaContext)
   const Component = isMobile ? DrawerContent : DialogContent
 
   return (
@@ -81,7 +85,7 @@ function CredenzaContent({ className, children, ...props }: CredenzaProps) {
 }
 
 function CredenzaHeader({ className, children, ...props }: CredenzaProps) {
-  const isMobile = useIsMobile()
+  const isMobile = use(CredenzaContext)
   const Component = isMobile ? DrawerHeader : DialogHeader
 
   return (
@@ -92,7 +96,7 @@ function CredenzaHeader({ className, children, ...props }: CredenzaProps) {
 }
 
 function CredenzaTitle({ className, children, ...props }: CredenzaProps) {
-  const isMobile = useIsMobile()
+  const isMobile = use(CredenzaContext)
   const Component = isMobile ? DrawerTitle : DialogTitle
 
   return (
@@ -103,7 +107,7 @@ function CredenzaTitle({ className, children, ...props }: CredenzaProps) {
 }
 
 function CredenzaDescription({ className, children, ...props }: CredenzaProps) {
-  const isMobile = useIsMobile()
+  const isMobile = use(CredenzaContext)
   const Component = isMobile ? DrawerDescription : DialogDescription
 
   return (
@@ -118,7 +122,7 @@ function CredenzaBody({ className, children }: CredenzaProps) {
 }
 
 function CredenzaFooter({ className, children, ...props }: CredenzaProps) {
-  const isMobile = useIsMobile()
+  const isMobile = use(CredenzaContext)
   const Component = isMobile ? DrawerFooter : DialogFooter
 
   return (

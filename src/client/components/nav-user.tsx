@@ -1,5 +1,5 @@
-import { useState } from 'react'
 import { ChevronsUpDown, LogOut } from 'lucide-react'
+import { useState } from 'react'
 import { LogoutAlert } from '@/components/logout-alert'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
 import {

@@ -21,4 +21,5 @@ export interface IncidentRow {
   latitude: string | null
   longitude: string | null
   nearest_town: string | null
+  comments: string | null
 }
