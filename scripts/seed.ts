@@ -9,26 +9,10 @@ import type {
   Sex,
   TimeOfKill,
 } from '../src/services/database/types/database.js'
+import { seedServiceAreas } from './seed-service-areas.js'
 
 const DRY_RUN = process.argv.includes('--dry-run')
 const db = createDatabase()
-
-interface GeoJsonFeature {
-  type: 'Feature'
-  properties: {
-    CONTRACT_AREA_NUMBER: number
-    CONTRACT_AREA_NAME: string
-  }
-  geometry: {
-    type: 'Polygon' | 'MultiPolygon'
-    coordinates: number[][][] | number[][][][]
-  }
-}
-
-interface GeoJsonCollection {
-  type: 'FeatureCollection'
-  features: GeoJsonFeature[]
-}
 
 interface CsvRow {
   'Accident.Date': string
@@ -175,42 +159,6 @@ function resolveDataFile(root: string, filename: string): string {
   return resolved
 }
 
-async function seedServiceAreas(root: string): Promise<number> {
-  const geojsonPath = resolveDataFile(root, 'service-areas.geojson')
-  const raw = readFileSync(geojsonPath, 'utf-8')
-  const geojson: GeoJsonCollection = JSON.parse(raw)
-
-  console.log(`Parsed ${geojson.features.length} service area features`)
-
-  if (!DRY_RUN) {
-    await sql`TRUNCATE service_areas CASCADE`.execute(db)
-
-    for (const feature of geojson.features) {
-      const { CONTRACT_AREA_NUMBER, CONTRACT_AREA_NAME } = feature.properties
-      const geomJson = JSON.stringify(feature.geometry)
-
-      await sql`
-        INSERT INTO service_areas (contract_area_number, name, geom)
-        VALUES (
-          ${CONTRACT_AREA_NUMBER},
-          ${CONTRACT_AREA_NAME},
-          ST_Multi(ST_GeomFromGeoJSON(${geomJson}))
-        )
-      `.execute(db)
-    }
-
-    const { count } = await db
-      .selectFrom('service_areas')
-      .select(db.fn.countAll<number>().as('count'))
-      .executeTakeFirstOrThrow()
-
-    console.log(`Inserted ${count} service areas`)
-    return Number(count)
-  }
-
-  return geojson.features.length
-}
-
 async function runSpatialJoin(): Promise<void> {
   if (DRY_RUN) return
 
@@ -254,9 +202,11 @@ async function seed() {
 
   const root = path.resolve(import.meta.dir, '..')
 
-  // 1. Seed service areas from GeoJSON
+  // 1. Seed service areas from WFS
   console.log('\n--- Service Areas ---')
-  await seedServiceAreas(root)
+  if (!DRY_RUN) {
+    await seedServiceAreas(db)
+  }
 
   // 2. Load species lookup from DB
   const speciesRows = await db.selectFrom('species').selectAll().execute()
@@ -421,7 +371,11 @@ async function seed() {
   await db.destroy()
 }
 
-seed().catch((err) => {
+try {
+  await seed()
+  process.exit(0)
+} catch (err) {
   console.error('Seed failed:', err)
-  db.destroy().then(() => process.exit(1))
-})
+  await db.destroy().catch(() => {})
+  process.exit(1)
+}
