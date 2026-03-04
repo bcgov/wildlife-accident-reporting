@@ -1,10 +1,11 @@
 "use client";
 
 import Spiderfy from "@nazka/map-gl-js-spiderfy";
+import bbox from "@turf/bbox";
 import convex from "@turf/convex";
 import MapLibreGL, { type MarkerOptions, type PopupOptions } from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { Loader2, Locate, Maximize, Minus, Plus, X } from "lucide-react";
+import { Home, Loader2, Locate, Maximize, Minus, Plus, ScanSearch, X } from "lucide-react";
 import { googleProtocol } from "maplibre-google-maps";
 
 MapLibreGL.addProtocol("google", googleProtocol);
@@ -725,6 +726,16 @@ type MapControlsProps = {
   showLocate?: boolean;
   /** Show fullscreen toggle button (default: false) */
   showFullscreen?: boolean;
+  /** Show fit-bounds button to zoom to data extent (default: false) */
+  showFitBounds?: boolean;
+  /** GeoJSON data to compute bounds from for the fit-bounds button */
+  fitBoundsData?: GeoJSON.FeatureCollection;
+  /** Show reset-view button to return to default map view (default: false) */
+  showResetView?: boolean;
+  /** Center to fly to when resetting view. Required when showResetView is true. */
+  resetViewCenter?: [number, number];
+  /** Zoom level to fly to when resetting view. Required when showResetView is true. */
+  resetViewZoom?: number;
   /** Additional CSS classes for the controls container */
   className?: string;
   /** Callback with user coordinates when located */
@@ -771,7 +782,7 @@ function ControlButton({
             type="button"
             className={cn(
               "flex items-center justify-center size-8 hover:bg-accent dark:hover:bg-accent/40 transition-colors",
-              disabled && "opacity-50 pointer-events-none cursor-not-allowed",
+              disabled && "opacity-50 cursor-not-allowed",
               active && "bg-accent text-accent-foreground"
             )}
             disabled={disabled}
@@ -791,6 +802,11 @@ function MapControls({
   showCompass = false,
   showLocate = false,
   showFullscreen = false,
+  showFitBounds = false,
+  fitBoundsData,
+  showResetView = false,
+  resetViewCenter,
+  resetViewZoom,
   className,
   onLocate,
 }: MapControlsProps) {
@@ -845,6 +861,26 @@ function MapControls({
     }
   }, [map]);
 
+  const hasFitBoundsFeatures = (fitBoundsData?.features.length ?? 0) > 0;
+
+  const handleFitBounds = useCallback(() => {
+    if (!map || !fitBoundsData || fitBoundsData.features.length === 0) return;
+    const [minLng, minLat, maxLng, maxLat] = bbox(fitBoundsData);
+    map.fitBounds(
+      [minLng, minLat, maxLng, maxLat] as [number, number, number, number],
+      { padding: 60, duration: 1000 },
+    );
+  }, [map, fitBoundsData]);
+
+  const handleResetView = useCallback(() => {
+    if (!map) return;
+    map.flyTo({
+      center: resetViewCenter,
+      zoom: resetViewZoom,
+      duration: 1000,
+    });
+  }, [map, resetViewCenter, resetViewZoom]);
+
   const tooltipSide = position.includes("left") ? "right" as const : "left" as const;
 
   return (
@@ -891,6 +927,25 @@ function MapControls({
           <ControlButton onClick={handleFullscreen} label="Toggle fullscreen" tooltipSide={tooltipSide}>
             <Maximize className="size-4" />
           </ControlButton>
+        </ControlGroup>
+      )}
+      {(showFitBounds || showResetView) && (
+        <ControlGroup>
+          {showFitBounds && (
+            <ControlButton
+              onClick={handleFitBounds}
+              label="Zoom to data"
+              disabled={!hasFitBoundsFeatures}
+              tooltipSide={tooltipSide}
+            >
+              <ScanSearch className="size-4" />
+            </ControlButton>
+          )}
+          {showResetView && (
+            <ControlButton onClick={handleResetView} label="Reset view" tooltipSide={tooltipSide}>
+              <Home className="size-4" />
+            </ControlButton>
+          )}
         </ControlGroup>
       )}
     </div>

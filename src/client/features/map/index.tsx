@@ -110,6 +110,11 @@ export function Component() {
         showCompass
         showLocate
         showFullscreen
+        showFitBounds
+        fitBoundsData={geojson}
+        showResetView
+        resetViewCenter={[-124.5, 54.5]}
+        resetViewZoom={5}
       />
       <ZoomToLocation />
       <LayerControls position="top-right" />
