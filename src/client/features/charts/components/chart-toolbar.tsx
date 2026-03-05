@@ -40,6 +40,7 @@ export function ChartToolbar({
         <SelectContent>
           <SelectItem value="year">Yearly</SelectItem>
           <SelectItem value="month">Monthly</SelectItem>
+          <SelectItem value="seasonal">Seasonal</SelectItem>
         </SelectContent>
       </Select>
       <Popover>
@@ -58,7 +59,8 @@ export function ChartToolbar({
           <div className="flex flex-col gap-1.5">
             {speciesKeys
               .filter((s) => s !== REMAINING_KEY)
-              .toSorted((a, b) => a.localeCompare(b))
+              .slice()
+              .sort((a, b) => a.localeCompare(b))
               .map((species) => (
                 <div key={species} className="flex items-center gap-2 text-sm">
                   <div

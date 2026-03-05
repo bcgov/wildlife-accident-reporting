@@ -3,9 +3,11 @@ import { useMemo, useState } from 'react'
 import { useIncidents } from '@/hooks/use-incidents'
 import { ChartToolbar } from './components/chart-toolbar'
 import { KpiCards } from './components/kpi-cards'
+import { SeasonalHeatmap } from './components/seasonal-heatmap'
 import { SpeciesBarChart } from './components/species-bar-chart'
 import {
   buildChartConfig,
+  countBySeason,
   countByTimeBucket,
   MAX_YEARS_FOR_MONTHLY,
   summarize,
@@ -37,20 +39,24 @@ export function Component() {
     [incidents, monthlyAllowed],
   )
 
-  const dataByBucket = useMemo(
+  const bySeasonal = useMemo(() => countBySeason(incidents), [incidents])
+
+  const barDataByBucket = useMemo(
     () => ({ year: byYear, month: byMonth }),
     [byYear, byMonth],
   )
 
-  const { rows, speciesKeys } = dataByBucket[bucket]
+  const barData = bucket === 'seasonal' ? byYear : barDataByBucket[bucket]
+  const { rows, speciesKeys } = barData
 
   const allSpeciesKeys = useMemo(() => {
     const keys = new Set<string>()
-    for (const bucketData of Object.values(dataByBucket)) {
+    for (const bucketData of Object.values(barDataByBucket)) {
       for (const k of bucketData.speciesKeys) keys.add(k)
     }
+    for (const k of bySeasonal.speciesKeys) keys.add(k)
     return [...keys]
-  }, [dataByBucket])
+  }, [barDataByBucket, bySeasonal])
 
   const chartConfig = useMemo(
     () => buildChartConfig(incidents, allSpeciesKeys),
@@ -76,13 +82,17 @@ export function Component() {
         speciesKeys={speciesKeys}
         config={chartConfig}
       />
-      <SpeciesBarChart
-        data={rows}
-        speciesKeys={speciesKeys}
-        config={chartConfig}
-        isLoading={isLoading}
-        monthlyUnavailable={monthlyUnavailable}
-      />
+      {bucket === 'seasonal' ? (
+        <SeasonalHeatmap data={bySeasonal.rows} isLoading={isLoading} />
+      ) : (
+        <SpeciesBarChart
+          data={rows}
+          speciesKeys={speciesKeys}
+          config={chartConfig}
+          isLoading={isLoading}
+          monthlyUnavailable={monthlyUnavailable}
+        />
+      )}
     </div>
   )
 }

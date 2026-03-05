@@ -2,6 +2,7 @@ import type { Incident } from '@schemas/incidents/incidents.schema'
 import type { ChartConfig } from '@/components/ui/chart'
 import type {
   KpiSummary,
+  SeasonalHeatmapRow,
   SpeciesCount,
   TimeBucket,
   TimeBucketRow,
@@ -152,6 +153,43 @@ function formatBucketLabel(key: string, bucket: TimeBucket): string {
     year: 'numeric',
     timeZone: 'UTC',
   })
+}
+
+export function countBySeason(incidents: Incident[]): {
+  rows: SeasonalHeatmapRow[]
+  speciesKeys: string[]
+} {
+  const groups = new Map<string, { color: string; months: number[] }>()
+
+  for (const incident of incidents) {
+    if (!incident.accidentDate) continue
+    if (incident.speciesGroupName.toUpperCase() === 'UNKNOWN') continue
+
+    const monthStr = incident.accidentDate.split('-')[1]
+    const monthIndex = Number(monthStr) - 1
+    if (monthIndex < 0 || monthIndex > 11) continue
+
+    const key = incident.speciesGroupName
+    let group = groups.get(key)
+    if (!group) {
+      group = { color: incident.speciesColor, months: new Array(12).fill(0) }
+      groups.set(key, group)
+    }
+    group.months[monthIndex] += incident.quantity
+  }
+
+  const speciesKeys = [...groups.keys()].sort((a, b) => a.localeCompare(b))
+
+  const rows: SeasonalHeatmapRow[] = speciesKeys.map((name) => {
+    const group = groups.get(name)
+    return {
+      speciesGroupName: name,
+      color: group?.color ?? REMAINING_COLOR,
+      months: group?.months ?? new Array(12).fill(0),
+    }
+  })
+
+  return { rows, speciesKeys }
 }
 
 export function buildChartConfig(
