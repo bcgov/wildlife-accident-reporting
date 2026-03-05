@@ -1,4 +1,6 @@
+import { TriangleAlertIcon } from 'lucide-react'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   Card,
   CardContent,
@@ -45,13 +47,19 @@ export function SpeciesBarChart({
         {isLoading ? (
           <Skeleton className="w-full" style={{ height: chartHeight }} />
         ) : monthlyUnavailable ? (
-          <p
-            className="text-muted-foreground flex items-center justify-center text-center"
+          <div
+            className="flex items-center justify-center"
             style={{ height: chartHeight }}
           >
-            Monthly view is available when {MAX_YEARS_FOR_MONTHLY} or fewer
-            years are selected
-          </p>
+            <Alert variant="warning" className="max-w-sm">
+              <TriangleAlertIcon />
+              <AlertTitle>Monthly view unavailable</AlertTitle>
+              <AlertDescription>
+                Select {MAX_YEARS_FOR_MONTHLY} or fewer years to use the monthly
+                view
+              </AlertDescription>
+            </Alert>
+          </div>
         ) : data.length === 0 ? (
           <p
             className="text-muted-foreground flex items-center justify-center text-center"
