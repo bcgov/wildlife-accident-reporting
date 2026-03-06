@@ -1,11 +1,10 @@
-# Values from bcgov/quickstart-openshift
 global:
   config:
     dbName: app #test
 crunchy: # enable it for TEST and PROD, for PR based pipelines simply use single postgres
   enabled: true
-  postgresVersion: 17
-  postGISVersion: 3.4
+  postgresVersion: 18
+  postGISVersion: 3.6
   openshift: true
   imagePullPolicy: IfNotPresent
   # enable below to start a new crunchy cluster after disaster from a backed-up location, crunchy will choose the best place to recover from.
