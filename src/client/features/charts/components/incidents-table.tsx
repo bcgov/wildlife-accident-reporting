@@ -13,10 +13,12 @@ import {
   useReactTable,
 } from '@tanstack/react-table'
 import { format } from 'date-fns'
+import { Crosshair } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { DataTableColumnHeader } from '@/components/table/data-table-column-header'
 import { DataTablePagination } from '@/components/table/data-table-pagination'
 import { DataTableToolbar } from '@/components/table/data-table-toolbar'
+import { Button } from '@/components/ui/button'
 import {
   Table,
   TableBody,
@@ -27,7 +29,14 @@ import {
 } from '@/components/ui/table'
 import type { ColumnConfig } from '@/components/ui/table-skeleton'
 import { TableRowsSkeleton } from '@/components/ui/table-skeleton'
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useLocalStorage } from '@/hooks/use-local-storage'
+import { useIncidentLocateStore } from '@/stores/incident-locate-store'
+import { useTabStore } from '@/stores/tab-store'
 
 const nullCell = <span className="text-muted-foreground">-</span>
 
@@ -46,6 +55,60 @@ function buildSearchIndex(incidents: Incident[], keys: string[]) {
     )
   }
   return index
+}
+
+const locateColumn: ColumnDef<Incident> = {
+  id: 'locate',
+  enableSorting: false,
+  enableHiding: false,
+  header: () => <span className="sr-only">Locate</span>,
+  cell: ({ row }) => {
+    const { latitude, longitude } = row.original
+    const hasCoordinates = latitude != null && longitude != null
+    return (
+      <Tooltip>
+        <TooltipTrigger
+          render={
+            <Button
+              variant="gold"
+              size="icon"
+              className="size-7"
+              disabled={!hasCoordinates}
+              onClick={() => {
+                if (latitude == null || longitude == null) return
+                const incident = row.original
+                useIncidentLocateStore.getState().locate({
+                  coordinates: [longitude, latitude],
+                  properties: {
+                    id: incident.id,
+                    speciesName: incident.speciesName,
+                    speciesColor: incident.speciesColor,
+                    speciesGroupName: incident.speciesGroupName,
+                    year: incident.year,
+                    accidentDate: incident.accidentDate,
+                    sex: incident.sex,
+                    timeOfKill: incident.timeOfKill,
+                    age: incident.age,
+                    quantity: incident.quantity,
+                    nearestTown: incident.nearestTown,
+                    serviceAreaName: incident.serviceAreaName,
+                    contractAreaNumber: incident.contractAreaNumber,
+                    comments: incident.comments,
+                  },
+                })
+                useTabStore.getState().setActiveTab('map')
+              }}
+            />
+          }
+        >
+          <Crosshair className="size-4" />
+        </TooltipTrigger>
+        <TooltipContent>
+          {hasCoordinates ? 'Locate on map' : 'No coordinates available'}
+        </TooltipContent>
+      </Tooltip>
+    )
+  },
 }
 
 const columns: ColumnDef<Incident>[] = [
@@ -183,6 +246,7 @@ const columns: ColumnDef<Incident>[] = [
     ),
     cell: ({ getValue }) => getValue<string>() || nullCell,
   },
+  locateColumn,
 ]
 
 const skeletonColumns: ColumnConfig[] = [
@@ -201,6 +265,7 @@ const skeletonColumns: ColumnConfig[] = [
   { type: 'text', width: 'w-16' },
   { type: 'text', width: 'w-12' },
   { type: 'text', width: 'w-32' },
+  { type: 'text', width: 'w-7' },
 ]
 
 type IncidentsTableProps = {

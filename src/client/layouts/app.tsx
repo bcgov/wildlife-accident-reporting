@@ -5,6 +5,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { Tabs, TabsContent } from '@/components/ui/tabs'
 import { Component as MapView } from '@/features/map'
 import { useAuthStore } from '@/stores/auth-store'
+import { useTabStore } from '@/stores/tab-store'
 
 const DataPage = lazy(() =>
   import('@/features/charts').then((m) => ({ default: m.Component })),
@@ -12,6 +13,7 @@ const DataPage = lazy(() =>
 
 export function Component() {
   const { initialized, authenticated, login } = useAuthStore()
+  const { activeTab, setActiveTab } = useTabStore()
 
   useEffect(() => {
     if (initialized && !authenticated) {
@@ -29,7 +31,7 @@ export function Component() {
 
   return (
     <div className="[--header-height:calc(--spacing(14))]">
-      <Tabs defaultValue="map" className="gap-0">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="gap-0">
         <SidebarProvider
           className="flex flex-col"
           style={

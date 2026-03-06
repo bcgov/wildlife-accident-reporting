@@ -233,6 +233,9 @@
   --color-success-surface: var(--success-surface);
   --color-warning-surface: var(--warning-surface);
 
+  /* BC Gov Gold */
+  --color-gold-foreground: oklch(0.297 0 0); /* #2D2D2D */
+
   /* BC Gov Gold - bg-gold-100, text-gold-60, etc. */
   --color-gold-10: oklch(0.979 0.022 89.789); /* #FEF8E8 */
   --color-gold-20: oklch(0.96 0.035 81.278); /* #FEF0D8 */

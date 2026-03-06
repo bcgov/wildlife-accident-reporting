@@ -30,15 +30,22 @@ function buildCsv<TData>(
   table: Table<TData>,
   columnLabels: Record<string, string>,
 ) {
-  const visibleColumns = table.getVisibleLeafColumns()
+  // Only export data columns (those with an accessor), not action columns
+  const visibleColumns = table
+    .getVisibleLeafColumns()
+    .filter((col) => typeof col.accessorFn !== 'undefined')
+  const dataColumnIds = new Set(visibleColumns.map((col) => col.id))
   const headers = visibleColumns.map((col) => columnLabels[col.id] ?? col.id)
 
   const rows = table.getSortedRowModel().rows.map((row) =>
-    row.getVisibleCells().map((cell) => {
-      const value = cell.getValue()
-      if (value == null) return ''
-      return String(value)
-    }),
+    row
+      .getVisibleCells()
+      .filter((cell) => dataColumnIds.has(cell.column.id))
+      .map((cell) => {
+        const value = cell.getValue()
+        if (value == null) return ''
+        return String(value)
+      }),
   )
 
   const csv = [

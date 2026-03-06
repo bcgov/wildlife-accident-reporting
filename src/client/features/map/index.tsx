@@ -1,13 +1,15 @@
 import type { Incident } from '@schemas/incidents/incidents.schema'
-import { useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   MapClusterLayer,
   MapControls,
   MapPopup,
   Map as MapView,
+  useMap,
 } from '@/components/ui/map'
 import { useIncidents } from '@/hooks/use-incidents'
 import { speciesIcons } from '@/lib/species-icons'
+import { useIncidentLocateStore } from '@/stores/incident-locate-store'
 import { BasemapDarkener } from './components/basemap-darkener'
 import { BoundaryLayer } from './components/boundary-layer'
 import { DrawControls } from './components/draw-controls'
@@ -75,6 +77,67 @@ function toGeoJSON(
   }
 }
 
+const CLUSTER_MAX_ZOOM = 22
+
+function LocateIncident({
+  onLocate,
+}: {
+  onLocate: (target: SelectedIncident) => void
+}) {
+  const { map, isLoaded } = useMap()
+  const target = useIncidentLocateStore((s) => s.target)
+  const clear = useIncidentLocateStore((s) => s.clear)
+
+  useEffect(() => {
+    if (!target || !map || !isLoaded) return
+
+    const { coordinates, properties } = target
+
+    let cancelled = false
+    let timeoutId: ReturnType<typeof setTimeout>
+
+    const onMoveEnd = () => {
+      if (cancelled) return
+      // Simulate a click at the target to trigger spiderfy on any cluster
+      const point = map.project(coordinates)
+      const canvas = map.getCanvas()
+      const rect = canvas.getBoundingClientRect()
+      canvas.dispatchEvent(
+        new MouseEvent('click', {
+          clientX: rect.left + point.x,
+          clientY: rect.top + point.y,
+          bubbles: true,
+        }),
+      )
+      // Open the popup after spiderfy animation completes
+      timeoutId = setTimeout(() => {
+        if (cancelled) return
+        onLocate({ coordinates, properties })
+        clear()
+      }, 400)
+    }
+
+    // Wait a frame for the tab to become visible so the map container
+    // has correct dimensions before flying
+    const rafId = requestAnimationFrame(() => {
+      if (cancelled) return
+      map.resize()
+      // Zoom to clusterMaxZoom - 1 so spiderfy activates on click
+      map.flyTo({ center: coordinates, zoom: CLUSTER_MAX_ZOOM - 1, duration: 1500 })
+      map.once('moveend', onMoveEnd)
+    })
+
+    return () => {
+      cancelled = true
+      cancelAnimationFrame(rafId)
+      clearTimeout(timeoutId)
+      map.off('moveend', onMoveEnd)
+    }
+  }, [target, map, isLoaded, clear, onLocate])
+
+  return null
+}
+
 const googleMapsApiKey = import.meta.env.VITE_GOOGLE_MAPS_API_KEY
 
 export function Component() {
@@ -120,13 +183,14 @@ export function Component() {
       <LayerControls position="top-right" />
       <DrawControls position="top-right" className="!top-12" />
       <BasemapDarkener />
+      <LocateIncident onLocate={setSelected} />
       <BoundaryLayer />
       <MapClusterLayer<IncidentProperties>
         data={geojson}
         icons={speciesIcons}
         iconProperty="speciesGroupName"
         clusterRadius={80}
-        clusterMaxZoom={17}
+        clusterMaxZoom={CLUSTER_MAX_ZOOM}
         clusterThresholds={[50, 200]}
         spiderfy
         clusterHull
