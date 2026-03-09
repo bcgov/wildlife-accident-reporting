@@ -3,11 +3,6 @@ import {
   SexEnum,
   TimeOfKillEnum,
 } from '@schemas/common/enums.schema.js'
-import { ErrorSchema } from '@schemas/common/error.schema.js'
-import {
-  PaginationQuerySchema,
-  paginatedResponse,
-} from '@schemas/common/pagination.schema.js'
 import {
   commaNumbers,
   commaStrings,
@@ -15,7 +10,7 @@ import {
 } from '@schemas/common/transforms.schema.js'
 import { z } from 'zod'
 
-export const IncidentsQuerySchema = z
+export const DensityQuerySchema = z
   .object({
     year: commaNumbers.optional().meta({
       override: {
@@ -88,44 +83,29 @@ export const IncidentsQuerySchema = z
       },
     }),
   })
-  .merge(PaginationQuerySchema)
   .refine(
     (data) =>
       !data.startDate || !data.endDate || data.startDate <= data.endDate,
     { message: 'startDate must be before or equal to endDate' },
   )
 
-export type IncidentsQuery = z.infer<typeof IncidentsQuerySchema>
+export type DensityQuery = z.infer<typeof DensityQuerySchema>
 
-export const IncidentSchema = z
-  .object({
-    id: z.number(),
-    year: z.number(),
-    accidentDate: z.string().nullable(),
-    speciesId: z.number(),
-    speciesName: z.string(),
-    speciesColor: z.string(),
-    speciesGroupName: z.string(),
-    serviceAreaId: z.number().nullable(),
-    serviceAreaName: z.string().nullable(),
-    contractAreaNumber: z.number().nullable(),
-    district: z.string().nullable(),
-    region: z.string().nullable(),
-    sex: SexEnum.nullable(),
-    timeOfKill: TimeOfKillEnum.nullable(),
-    age: AgeEnum.nullable(),
-    quantity: z.number().int().positive(),
-    latitude: z.number().nullable(),
-    longitude: z.number().nullable(),
-    nearestTown: z.string().nullable(),
-    comments: z.string(),
-  })
-  .meta({ id: 'Incident', description: 'A wildlife-vehicle collision record' })
+export const DensitySegmentSchema = z.object({
+  segmentId: z.number().int(),
+  segmentName: z.string(),
+  segmentDescription: z.string().nullable(),
+  highwayNumber: z.string().nullable(),
+  segmentLengthKm: z.number().nullable(),
+  geometry: z.record(z.string(), z.unknown()),
+  small: z.number().int(),
+  medium: z.number().int(),
+  large: z.number().int(),
+  totalAnimals: z.number().int(),
+  weighted: z.number(),
+  densityPerKm: z.number().nullable(),
+})
 
-export type Incident = z.infer<typeof IncidentSchema>
+export const DensityResponseSchema = z.array(DensitySegmentSchema)
 
-export const IncidentsResponseSchema = paginatedResponse(IncidentSchema)
-
-export type IncidentsResponse = z.infer<typeof IncidentsResponseSchema>
-
-export const IncidentErrorSchema = ErrorSchema
+export type DensityResponse = z.infer<typeof DensityResponseSchema>

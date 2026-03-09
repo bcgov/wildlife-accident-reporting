@@ -12,6 +12,7 @@ import { speciesIcons } from '@/lib/species-icons'
 import { useIncidentLocateStore } from '@/stores/incident-locate-store'
 import { BasemapDarkener } from './components/basemap-darkener'
 import { BoundaryLayer } from './components/boundary-layer'
+import { DensityLayer } from './components/density-layer'
 import { DrawControls } from './components/draw-controls'
 import { IncidentPopup } from './components/incident-popup'
 import { LayerControls } from './components/layer-controls'
@@ -188,6 +189,7 @@ export function Component() {
       <DrawControls position="top-right" className="!top-12" />
       <BasemapDarkener />
       <LocateIncident onLocate={setSelected} />
+      <DensityLayer />
       <BoundaryLayer />
       <MapClusterLayer<IncidentProperties>
         data={geojson}

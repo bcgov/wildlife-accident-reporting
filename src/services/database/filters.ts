@@ -4,6 +4,19 @@ import { sql } from 'kysely'
 import { geomFromGeoJSON, within } from 'kysely-postgis'
 import type { DB } from './types/database.js'
 
+type FilterFields = Pick<
+  IncidentsQuery,
+  | 'year'
+  | 'species'
+  | 'serviceArea'
+  | 'sex'
+  | 'timeOfKill'
+  | 'age'
+  | 'startDate'
+  | 'endDate'
+  | 'geometry'
+>
+
 type IncidentEB = ExpressionBuilder<
   DB & {
     wi: DB['wars_incidents']
@@ -13,26 +26,40 @@ type IncidentEB = ExpressionBuilder<
   'wi' | 'sp' | 'sa'
 >
 
-export function applyFilters(eb: IncidentEB, filters: IncidentsQuery) {
+type DensityEB = ExpressionBuilder<
+  DB & {
+    wi: DB['wars_incidents']
+    sp: DB['species']
+  },
+  'wi' | 'sp'
+>
+
+export function applyFilters(
+  eb: IncidentEB | DensityEB,
+  filters: FilterFields,
+) {
   const conditions: Expression<SqlBool>[] = []
 
+  // All filters target wi.* columns, so DensityEB (the common subset) works for both callers
+  const w = eb as DensityEB
+
   if (filters.year?.length) {
-    conditions.push(eb('wi.year', 'in', filters.year))
+    conditions.push(w('wi.year', 'in', filters.year))
   }
   if (filters.species?.length) {
-    conditions.push(eb('wi.species_id', 'in', filters.species))
+    conditions.push(w('wi.species_id', 'in', filters.species))
   }
   if (filters.serviceArea?.length) {
-    conditions.push(eb('wi.service_area_id', 'in', filters.serviceArea))
+    conditions.push(w('wi.service_area_id', 'in', filters.serviceArea))
   }
   if (filters.sex?.length) {
-    conditions.push(eb('wi.sex', 'in', filters.sex))
+    conditions.push(w('wi.sex', 'in', filters.sex))
   }
   if (filters.timeOfKill?.length) {
-    conditions.push(eb('wi.time_of_kill', 'in', filters.timeOfKill))
+    conditions.push(w('wi.time_of_kill', 'in', filters.timeOfKill))
   }
   if (filters.age?.length) {
-    conditions.push(eb('wi.age', 'in', filters.age))
+    conditions.push(w('wi.age', 'in', filters.age))
   }
   if (filters.startDate) {
     conditions.push(
@@ -45,10 +72,8 @@ export function applyFilters(eb: IncidentEB, filters: IncidentsQuery) {
     )
   }
   if (filters.geometry) {
-    conditions.push(
-      within(eb, 'wi.geom', geomFromGeoJSON(eb, filters.geometry)),
-    )
+    conditions.push(within(w, 'wi.geom', geomFromGeoJSON(w, filters.geometry)))
   }
 
-  return eb.and(conditions)
+  return w.and(conditions)
 }

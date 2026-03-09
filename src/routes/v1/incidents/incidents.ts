@@ -20,6 +20,7 @@ const plugin: FastifyPluginAsyncZodOpenApi = async (fastify) => {
         querystring: IncidentsQuerySchema,
         response: {
           200: IncidentsResponseSchema,
+          400: IncidentErrorSchema,
           500: IncidentErrorSchema,
         },
         tags: ['Incidents'],

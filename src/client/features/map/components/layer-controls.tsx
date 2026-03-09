@@ -6,7 +6,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover'
-import type { Basemap } from '../store/layer-store'
+import type { Basemap, DensityMode } from '../store/layer-store'
 import { useLayerStore } from '../store/layer-store'
 
 type LayerControlsProps = {
@@ -29,13 +29,21 @@ const basemapOptions: { id: Basemap; label: string }[] = [
 
 const overlayLayers = [
   { id: 'boundaries', label: 'Service area boundaries' },
+  { id: 'density', label: 'LKI segment density' },
 ] as const
+
+const densityModeOptions: { id: DensityMode; label: string }[] = [
+  { id: 'weighted', label: 'Weighted' },
+  { id: 'raw', label: 'Raw count' },
+]
 
 export function LayerControls({ position = 'top-right' }: LayerControlsProps) {
   const basemap = useLayerStore((s) => s.basemap)
   const setBasemap = useLayerStore((s) => s.setBasemap)
   const layerVisibility = useLayerStore((s) => s.layers)
   const toggleLayer = useLayerStore((s) => s.toggleLayer)
+  const densityMode = useLayerStore((s) => s.densityMode)
+  const setDensityMode = useLayerStore((s) => s.setDensityMode)
 
   const tooltipSide = position.includes('left')
     ? ('right' as const)
@@ -89,21 +97,42 @@ export function LayerControls({ position = 'top-right' }: LayerControlsProps) {
                 Overlays
               </span>
               {overlayLayers.map((layer) => (
-                <div
-                  key={layer.id}
-                  className="flex cursor-pointer items-center gap-2"
-                >
-                  <Checkbox
-                    id={`layer-${layer.id}`}
-                    checked={layerVisibility[layer.id] ?? false}
-                    onCheckedChange={() => toggleLayer(layer.id)}
-                  />
-                  <label
-                    htmlFor={`layer-${layer.id}`}
-                    className="cursor-pointer text-sm"
-                  >
-                    {layer.label}
-                  </label>
+                <div key={layer.id} className="flex flex-col gap-1.5">
+                  <div className="flex cursor-pointer items-center gap-2">
+                    <Checkbox
+                      id={`layer-${layer.id}`}
+                      checked={layerVisibility[layer.id] ?? false}
+                      onCheckedChange={() => toggleLayer(layer.id)}
+                    />
+                    <label
+                      htmlFor={`layer-${layer.id}`}
+                      className="cursor-pointer text-sm"
+                    >
+                      {layer.label}
+                    </label>
+                  </div>
+                  {layer.id === 'density' && layerVisibility.density && (
+                    <fieldset
+                      className="ml-6 flex gap-1 border-none p-0"
+                      aria-label="Density mode"
+                    >
+                      {densityModeOptions.map((opt) => (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => setDensityMode(opt.id)}
+                          aria-pressed={densityMode === opt.id}
+                          className={`rounded-md px-2 py-0.5 text-xs transition-colors ${
+                            densityMode === opt.id
+                              ? 'bg-primary text-primary-foreground'
+                              : 'bg-muted hover:bg-muted/80 text-foreground'
+                          }`}
+                        >
+                          {opt.label}
+                        </button>
+                      ))}
+                    </fieldset>
+                  )}
                 </div>
               ))}
             </div>

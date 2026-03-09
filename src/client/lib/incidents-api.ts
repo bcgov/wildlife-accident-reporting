@@ -20,7 +20,7 @@ export type IncidentFilters = {
 export const incidentsQueryKey = (filters: IncidentFilters) =>
   ['incidents', filters] as const
 
-function buildQueryString(filters: IncidentFilters): string {
+export function buildQueryString(filters: IncidentFilters): string {
   const params = new URLSearchParams()
 
   if (filters.years.length > 0) params.set('year', filters.years.join(','))

@@ -18,6 +18,7 @@ const plugin: FastifyPluginAsyncZodOpenApi = async (fastify) => {
         querystring: LookupQuerySchema,
         response: {
           200: LookupResponseSchema,
+          400: ErrorSchema,
           500: ErrorSchema,
         },
         tags: ['Service Areas'],

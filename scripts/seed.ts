@@ -9,6 +9,7 @@ import type {
   Sex,
   TimeOfKill,
 } from '../src/services/database/types/database.js'
+import { seedLkiSegments } from './seed-lki-segments.js'
 import { seedServiceAreas } from './seed-service-areas.js'
 
 const DRY_RUN = process.argv.includes('--dry-run')
@@ -225,11 +226,59 @@ async function runSpatialJoin(): Promise<void> {
 
   const unmatched = Number(total) - matched - Number(no_coords)
 
-  console.log('\n--- Spatial Join ---')
+  console.log('\n--- Spatial Join (Service Areas) ---')
   console.log(`Matched to service area: ${matched}`)
   console.log(`No coordinates (null geom): ${no_coords}`)
   if (unmatched > 0) {
     console.log(`Has coords but outside all polygons: ${unmatched}`)
+  }
+}
+
+async function runLkiAssignment(): Promise<void> {
+  if (DRY_RUN) return
+
+  const result = await sql<{ matched: number }>`
+    WITH updated AS (
+      UPDATE wars_incidents wi
+      SET lki_segment_id = sub.nearest_id
+      FROM (
+        SELECT wi2.id, nearest.chris_lki_segment_id AS nearest_id
+        FROM wars_incidents wi2
+        CROSS JOIN LATERAL (
+          SELECT chris_lki_segment_id, geom
+          FROM lki_segments
+          ORDER BY geom <-> wi2.geom
+          LIMIT 1
+        ) nearest
+        WHERE wi2.geom IS NOT NULL
+          AND ST_DWithin(geography(nearest.geom), geography(wi2.geom), 200)
+      ) sub
+      WHERE wi.id = sub.id
+      RETURNING wi.id
+    )
+    SELECT count(*)::int AS matched FROM updated
+  `.execute(db)
+
+  const matched = result.rows[0].matched
+
+  const { total } = await db
+    .selectFrom('wars_incidents')
+    .select(db.fn.countAll<number>().as('total'))
+    .executeTakeFirstOrThrow()
+
+  const { no_coords } = await db
+    .selectFrom('wars_incidents')
+    .select(db.fn.count<number>('id').as('no_coords'))
+    .where('geom', 'is', null)
+    .executeTakeFirstOrThrow()
+
+  const unmatched = Number(total) - matched - Number(no_coords)
+
+  console.log('\n--- Spatial Join (LKI Segments) ---')
+  console.log(`Matched to LKI segment: ${matched}`)
+  console.log(`No coordinates (null geom): ${no_coords}`)
+  if (unmatched > 0) {
+    console.log(`Has coords but outside 200m of any segment: ${unmatched}`)
   }
 }
 
@@ -244,7 +293,13 @@ async function seed() {
     await seedServiceAreas(db)
   }
 
-  // 2. Load species lookup from DB
+  // 2. Seed LKI segments from WFS
+  console.log('\n--- LKI Segments ---')
+  if (!DRY_RUN) {
+    await seedLkiSegments(db)
+  }
+
+  // 3. Load species lookup from DB
   const speciesRows = await db.selectFrom('species').selectAll().execute()
   const speciesMap = new Map<string, number>()
   for (const row of speciesRows) {
@@ -254,7 +309,7 @@ async function seed() {
 
   const match = buildMatcher(speciesMap)
 
-  // 3. Parse CSV
+  // 4. Parse CSV
   const csvPath = resolveDataFile(root, 'WARs.csv')
   const csvText = readFileSync(csvPath, 'utf-8')
   const parsed = Papa.parse<CsvRow>(csvText, {
@@ -352,7 +407,7 @@ async function seed() {
 
   console.log(`\nTotal rows to insert: ${insertRows.length}`)
 
-  // 4. Insert incidents
+  // 5. Insert incidents
   if (!DRY_RUN) {
     const BATCH_SIZE = 1000
     const totalBatches = Math.ceil(insertRows.length / BATCH_SIZE)
@@ -362,6 +417,12 @@ async function seed() {
     )
 
     await db.transaction().execute(async (trx) => {
+      // Disable per-row LKI trigger during bulk insert - we'll do a single
+      // bulk assignment after all rows are in
+      await sql`ALTER TABLE wars_incidents DISABLE TRIGGER trg_wars_incidents_lki_assign`.execute(
+        trx,
+      )
+
       for (let i = 0; i < insertRows.length; i += BATCH_SIZE) {
         const batch = insertRows.slice(i, i + BATCH_SIZE)
         const batchNum = Math.floor(i / BATCH_SIZE) + 1
@@ -394,6 +455,10 @@ async function seed() {
           console.log(`  Batch ${batchNum}/${totalBatches} complete`)
         }
       }
+
+      await sql`ALTER TABLE wars_incidents ENABLE TRIGGER trg_wars_incidents_lki_assign`.execute(
+        trx,
+      )
     })
 
     const { count } = await db
@@ -403,8 +468,11 @@ async function seed() {
 
     console.log(`\nInserted ${count} incidents`)
 
-    // 5. Spatial join - assign service areas
+    // 6. Spatial join - assign service areas
     await runSpatialJoin()
+
+    // 7. Bulk assign LKI segments
+    await runLkiAssignment()
   }
 
   console.log('\n=== SEED COMPLETE ===')

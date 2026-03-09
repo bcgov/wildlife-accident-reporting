@@ -7,6 +7,8 @@ import type { ColumnType } from 'kysely'
 
 export type Age = 'ADULT' | 'UNKNOWN' | 'YOUNG'
 
+export type BodySize = 'LARGE' | 'MEDIUM' | 'SMALL'
+
 export type Generated<T> =
   T extends ColumnType<infer S, infer I, infer U>
     ? ColumnType<S, I | undefined, U>
@@ -40,6 +42,21 @@ export interface GeometryColumns {
   type: string | null
 }
 
+export interface LkiSegments {
+  chris_lki_segment_id: number
+  created_at: Generated<Timestamp>
+  feature_length_m: Numeric | null
+  geom: string
+  highway_number: string | null
+  lki_route_id: string | null
+  lki_segment_description: string | null
+  lki_segment_direction: string | null
+  lki_segment_length: Numeric | null
+  lki_segment_name: string
+  objectid: number | null
+  updated_at: Generated<Timestamp>
+}
+
 export interface ServiceAreas {
   contract_area_number: number
   created_at: Generated<Timestamp>
@@ -61,6 +78,7 @@ export interface SpatialRefSys {
 }
 
 export interface Species {
+  body_size: Generated<BodySize>
   color: string
   group_name: string
   id: Generated<number>
@@ -76,6 +94,7 @@ export interface WarsIncidents {
   hmcr_record_id: number | null
   id: Generated<number>
   latitude: Numeric | null
+  lki_segment_id: number | null
   longitude: Numeric | null
   nearest_town: string | null
   quantity: Generated<number>
@@ -90,6 +109,7 @@ export interface WarsIncidents {
 export interface DB {
   geography_columns: GeographyColumns
   geometry_columns: GeometryColumns
+  lki_segments: LkiSegments
   service_areas: ServiceAreas
   spatial_ref_sys: SpatialRefSys
   species: Species
