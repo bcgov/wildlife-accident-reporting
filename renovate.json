@@ -1,5 +1,28 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
   "description": "Presets from https://github.com/bcgov/renovate-config",
-  "extends": ["github>bcgov/renovate-config#2025.10.1"]
+  "extends": ["github>bcgov/renovate-config#2026.01"],
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update Biome schema version in biome.json to match CLI",
+      "managerFilePatterns": ["/^biome\\.json$/"],
+      "matchStrings": ["biomejs\\.dev/schemas/(?<currentValue>[\\d.]+)/schema\\.json"],
+      "depNameTemplate": "@biomejs/biome",
+      "datasourceTemplate": "npm"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Keep biome.json schema in sync with @biomejs/biome package",
+      "matchPackageNames": ["@biomejs/biome"],
+      "groupName": "biome",
+      "rangeStrategy": "bump"
+    },
+    {
+      "description": "Pin recharts to v2.x - shadcn chart component not compatible with v3",
+      "matchPackageNames": ["recharts"],
+      "allowedVersions": "< 3.0.0"
+    }
+  ]
 }
