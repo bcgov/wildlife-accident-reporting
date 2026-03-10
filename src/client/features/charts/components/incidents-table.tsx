@@ -328,7 +328,6 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
     getFilteredRowModel: getFilteredRowModel(),
   })
 
-  // Filter out hidden columns from skeleton config
   const visibleSkeletonColumns = skeletonColumns.filter((_, i) => {
     const col = columns[i]
     if (!col) return false
@@ -341,7 +340,6 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
 
   return (
     <div className="w-full space-y-4">
-      {/* Toolbar */}
       <DataTableToolbar
         table={table}
         searchPlaceholder="Search species, town, area..."
@@ -365,7 +363,6 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
         }}
       />
 
-      {/* Table */}
       <div className="rounded-md border">
         <Table>
           <TableHeader>
@@ -422,7 +419,6 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
         </Table>
       </div>
 
-      {/* Pagination */}
       <DataTablePagination
         table={table}
         totalRows={isFiltered ? filteredRowCount : incidents.length}

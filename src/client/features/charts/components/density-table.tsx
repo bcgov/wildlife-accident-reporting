@@ -322,7 +322,6 @@ export function DensityTable({
   const tableRef = useRef(table)
   tableRef.current = table
 
-  // Navigate to the page containing the highlighted segment and scroll into view
   useEffect(() => {
     if (!highlightedSegment) return
 

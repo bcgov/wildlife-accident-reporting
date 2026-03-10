@@ -73,7 +73,6 @@ export function SeasonalHeatmap({ data, isLoading }: SeasonalHeatmapProps) {
                   'minmax(100px, max-content) repeat(12, 1fr)',
               }}
             >
-              {/* Month headers */}
               <div />
               {MONTH_LABELS.map((label) => (
                 <div
@@ -84,7 +83,6 @@ export function SeasonalHeatmap({ data, isLoading }: SeasonalHeatmapProps) {
                 </div>
               ))}
 
-              {/* Data rows */}
               {data.map((row) => {
                 const rowMax = Math.max(...row.months)
 
@@ -130,7 +128,6 @@ export function SeasonalHeatmap({ data, isLoading }: SeasonalHeatmapProps) {
               })}
             </div>
 
-            {/* Tooltip */}
             {tooltip && (
               <div
                 className="pointer-events-none absolute z-10 grid min-w-32 items-start gap-1.5 rounded-lg border border-border/50 bg-background px-2.5 py-1.5 text-xs shadow-xl"

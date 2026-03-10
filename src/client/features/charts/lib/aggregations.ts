@@ -64,7 +64,6 @@ export function countByTimeBucket(
   incidents: Incident[],
   bucket: TimeBucket,
 ): { rows: TimeBucketRow[]; speciesKeys: string[] } {
-  // First pass: accumulate raw species counts per time bucket
   const rawBuckets = new Map<string, Map<string, number>>()
 
   for (const incident of incidents) {
@@ -92,7 +91,6 @@ export function countByTimeBucket(
         total: 0,
       }
 
-      // Sort species by count descending within this bar
       const sorted = [...speciesMap.entries()].sort(([, a], [, b]) => b - a)
 
       let remainingSum = 0
@@ -115,7 +113,6 @@ export function countByTimeBucket(
       return row
     })
 
-  // Sort species keys by overall total descending, Remaining last
   const globalTotals = new Map<string, number>()
   for (const speciesMap of rawBuckets.values()) {
     for (const [species, count] of speciesMap) {
@@ -147,7 +144,6 @@ function toBucketKey(incident: Incident, bucket: TimeBucket): string | null {
 
 function formatBucketLabel(key: string, bucket: TimeBucket): string {
   if (bucket === 'year') return key
-  // Key is already "YYYY-MM" from toBucketKey, format for display
   const [year, month] = key.split('-')
   const date = new Date(Date.UTC(Number(year), Number(month) - 1))
   return date.toLocaleDateString('en-CA', {

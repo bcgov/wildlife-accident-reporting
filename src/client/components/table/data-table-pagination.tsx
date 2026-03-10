@@ -28,7 +28,6 @@ export function DataTablePagination<TData>({
 
   return (
     <div className="flex items-center justify-between gap-4 px-2 py-2">
-      {/* Left: page size selector */}
       <div className="flex items-center gap-2">
         <Select
           value={`${pageSize}`}
@@ -54,7 +53,6 @@ export function DataTablePagination<TData>({
         </span>
       </div>
 
-      {/* Center: showing info */}
       <div className="text-muted-foreground text-sm tabular-nums">
         <span className="hidden md:inline">
           Showing {start}-{end} of {totalRows.toLocaleString()}
@@ -64,7 +62,6 @@ export function DataTablePagination<TData>({
         </span>
       </div>
 
-      {/* Right: prev / next */}
       <div className="flex items-center gap-1">
         <Button
           variant="outline"
