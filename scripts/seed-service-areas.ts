@@ -137,7 +137,6 @@ export async function seedServiceAreas(db: Kysely<DB>): Promise<number> {
   })
 }
 
-// Run standalone when executed directly
 if (import.meta.main) {
   const db = createDatabase()
   try {

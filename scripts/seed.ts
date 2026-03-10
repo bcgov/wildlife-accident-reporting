@@ -110,7 +110,6 @@ function buildMatcher(speciesMap: Map<string, number>) {
   return function match(rawSpecies: string): MatchResult {
     const lower = rawSpecies.trim().toLowerCase()
 
-    // Explicit overrides
     if (lower in OVERRIDES) {
       const target = OVERRIDES[lower].toLowerCase()
       const id = speciesMap.get(target)
@@ -123,7 +122,6 @@ function buildMatcher(speciesMap: Map<string, number>) {
       }
     }
 
-    // Case-insensitive exact match
     const exactId = speciesMap.get(lower)
     if (exactId !== undefined) {
       return {
@@ -133,7 +131,6 @@ function buildMatcher(speciesMap: Map<string, number>) {
       }
     }
 
-    // Anything else -> Unknown
     return { speciesId: unknownId, speciesName: 'Unknown', method: 'unknown' }
   }
 }
@@ -327,7 +324,6 @@ async function seed() {
   const rows = parsed.data
   console.log(`Parsed ${rows.length} CSV rows`)
 
-  // Process rows
   const stats = {
     exact: 0,
     override: 0,
@@ -380,7 +376,6 @@ async function seed() {
     })
   }
 
-  // Print report
   console.log('\n--- Matching Report ---')
   console.log(`Exact matches:    ${stats.exact}`)
   console.log(`Override matches: ${stats.override}`)
@@ -407,7 +402,6 @@ async function seed() {
 
   console.log(`\nTotal rows to insert: ${insertRows.length}`)
 
-  // 5. Insert incidents
   if (!DRY_RUN) {
     const BATCH_SIZE = 1000
     const totalBatches = Math.ceil(insertRows.length / BATCH_SIZE)
@@ -468,10 +462,7 @@ async function seed() {
 
     console.log(`\nInserted ${count} incidents`)
 
-    // 6. Spatial join - assign service areas
     await runSpatialJoin()
-
-    // 7. Bulk assign LKI segments
     await runLkiAssignment()
   }
 

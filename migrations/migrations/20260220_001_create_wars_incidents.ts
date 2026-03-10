@@ -2,7 +2,6 @@ import type { Kysely } from 'kysely'
 import { sql } from 'kysely'
 
 export async function up(db: Kysely<never>): Promise<void> {
-  // Species reference table
   await db.schema
     .createTable('species')
     .addColumn('id', 'smallint', (col) =>
@@ -19,7 +18,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     .column('group_name')
     .execute()
 
-  // Seed species
   await sql`
     INSERT INTO species (name, group_name, color) VALUES
       ('Badger',          'Badger',          '#C1E3D8'),
@@ -54,7 +52,6 @@ export async function up(db: Kysely<never>): Promise<void> {
       ('Wolf',            'Wolf',            '#8A5A7C')
   `.execute(db)
 
-  // Service areas reference table
   await db.schema
     .createTable('service_areas')
     .addColumn('id', 'smallint', (col) =>
@@ -153,7 +150,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     EXECUTE FUNCTION reassign_incidents_service_area()
   `.execute(db)
 
-  // Enums
   await db.schema
     .createType('time_of_kill')
     .asEnum(['DAWN', 'DUSK', 'DAY', 'DARK', 'UNKNOWN'])
@@ -169,7 +165,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     .asEnum(['YOUNG', 'ADULT', 'UNKNOWN'])
     .execute()
 
-  // Wars incidents table
   await db.schema
     .createTable('wars_incidents')
     .addColumn('id', 'integer', (col) =>
@@ -229,7 +224,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     EXECUTE FUNCTION wars_incidents_geom_trigger()
   `.execute(db)
 
-  // Auto-update updated_at on row modification
   await sql`
     CREATE TRIGGER trg_wars_incidents_updated_at
     BEFORE UPDATE ON wars_incidents
@@ -237,7 +231,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     EXECUTE FUNCTION update_updated_at()
   `.execute(db)
 
-  // Indexes
   await db.schema
     .createIndex('idx_wars_incidents_geom')
     .on('wars_incidents')

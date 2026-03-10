@@ -15,7 +15,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     )
     .execute()
 
-  // Set body sizes for known species
   await sql`
     UPDATE species SET body_size = 'LARGE' WHERE name IN (
       'Moose', 'Elk', 'Caribou', 'Buffalo'
@@ -30,7 +29,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     )
   `.execute(db)
 
-  // LKI segments table
   await db.schema
     .createTable('lki_segments')
     .addColumn('chris_lki_segment_id', 'integer', (col) => col.primaryKey())
@@ -77,7 +75,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     EXECUTE FUNCTION update_updated_at()
   `.execute(db)
 
-  // FK from wars_incidents to lki_segments
   await db.schema
     .alterTable('wars_incidents')
     .addColumn('lki_segment_id', 'integer', (col) =>
