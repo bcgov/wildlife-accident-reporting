@@ -13,3 +13,7 @@ KSV021
 # OpenShift restricted SCC forbids seccomp: "seccomp may not be set".
 KSV030
 KSV104
+
+# DS-0026: No HEALTHCHECK defined
+# Health checks are handled by Kubernetes probes in the Helm chart.
+DS-0026

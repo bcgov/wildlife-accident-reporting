@@ -4,11 +4,9 @@ WORKDIR /app
 
 # Stage 2 - Production dependencies (cached independently)
 FROM base AS install
+WORKDIR /temp/prod
 COPY package.json bun.lock ./
-RUN mkdir -p /temp/prod && \
-    cp package.json bun.lock /temp/prod/ && \
-    cd /temp/prod && \
-    bun install --frozen-lockfile --production --ignore-scripts
+RUN bun install --frozen-lockfile --production --ignore-scripts
 
 # Stage 3 - Full install + build
 FROM base AS builder
