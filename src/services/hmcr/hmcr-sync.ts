@@ -3,8 +3,6 @@ import type { HmcrUpsertRow } from '@services/database/types/hmcr.js'
 import { createServiceLogger } from '@utils/logger.js'
 import type { FastifyBaseLogger, FastifyInstance } from 'fastify'
 
-// HMCR API response types
-
 interface HmcrFeatureProperties {
   WILDLIFE_RECORD_ID: number
   ACCIDENT_DATE: string | null
@@ -32,7 +30,6 @@ interface TokenResponse {
   expires_in: number
 }
 
-// Fields we need from the HMCR wildlife report view
 const PROPERTY_NAMES = [
   'WILDLIFE_RECORD_ID',
   'ACCIDENT_DATE',
@@ -47,7 +44,6 @@ const PROPERTY_NAMES = [
   'COMMENT',
 ].join(',')
 
-// HMCR species numeric codes -> species names
 const HMCR_SPECIES_MAP: Record<number, string> = {
   1: 'Deer',
   2: 'Moose',
@@ -82,7 +78,6 @@ const HMCR_SPECIES_MAP: Record<number, string> = {
   31: 'Grizzly Bear',
 }
 
-// HMCR time_of_kill numeric codes -> enum values
 function parseTimeOfKill(code: number | null): string | null {
   if (code === null) return null
   switch (code) {
@@ -101,7 +96,6 @@ function parseTimeOfKill(code: number | null): string | null {
   }
 }
 
-// HMCR sex single-char codes -> enum values
 function parseSex(raw: string | null): string | null {
   if (!raw) return null
   switch (raw.trim().toUpperCase()) {
@@ -118,7 +112,6 @@ function parseSex(raw: string | null): string | null {
   }
 }
 
-// HMCR age single-char codes -> enum values
 function parseAge(raw: string | null): string | null {
   if (!raw) return null
   switch (raw.trim().toUpperCase()) {
@@ -169,17 +162,14 @@ export class HmcrSyncService {
   async sync(): Promise<HmcrSyncResponse> {
     const start = Date.now()
 
-    // 1. Fetch all HMCR records
     const records = await this.fetchWildlifeRecords()
 
-    // 2. Load species lookup from DB
     const speciesMap = await this.fastify.db.getSpeciesMap()
     const unknownId = speciesMap.get('unknown')
     if (unknownId === undefined) {
       throw new Error('Species "Unknown" not found in database')
     }
 
-    // 3. Transform HMCR records to upsert rows
     let errors = 0
     const rows: HmcrUpsertRow[] = []
 
@@ -200,7 +190,6 @@ export class HmcrSyncService {
         continue
       }
 
-      // Resolve species from numeric code
       const speciesName =
         record.SPECIES !== null ? HMCR_SPECIES_MAP[record.SPECIES] : undefined
       const speciesId = speciesName
@@ -231,7 +220,6 @@ export class HmcrSyncService {
       'transformed HMCR records',
     )
 
-    // 4. Upsert via database service
     const { created, updated } = await this.fastify.db.upsertHmcrIncidents(rows)
     const unchanged = rows.length - created - updated
     const durationMs = Date.now() - start

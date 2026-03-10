@@ -1,7 +1,6 @@
 import { PolygonGeometrySchema } from '@schemas/common/geojson.schema.js'
 import { z } from 'zod'
 
-// Comma-separated string to array of numbers
 export const commaNumbers = z
   .string()
   .transform((s) =>
@@ -13,7 +12,6 @@ export const commaNumbers = z
   )
   .pipe(z.array(z.number().int()))
 
-// Comma-separated string to array of strings (trimmed)
 export const commaStrings = z.string().transform((s) =>
   s
     .split(',')
@@ -21,7 +19,7 @@ export const commaStrings = z.string().transform((s) =>
     .filter((v) => v.length > 0),
 )
 
-// Parse a GeoJSON geometry string from drawing tools (Polygon or MultiPolygon)
+// Accepts GeoJSON string from map drawing tools
 export const geoJsonString = z
   .string()
   .transform((s, ctx) => {
