@@ -35,7 +35,7 @@
         "@bcgov/bc-sans": "^2.1.0",
         "@biomejs/biome": "^2.4.6",
         "@hookform/resolvers": "^5.2.2",
-        "@nazka/map-gl-js-spiderfy": "^1.2.10",
+        "@nazka/map-gl-js-spiderfy": "^2.0.0",
         "@tailwindcss/postcss": "^4.2.1",
         "@tanstack/react-query": "^5.90.21",
         "@tanstack/react-table": "^8.21.3",
@@ -351,7 +351,7 @@
 
     "@napi-rs/wasm-runtime": ["@napi-rs/wasm-runtime@1.1.4", "", { "dependencies": { "@tybys/wasm-util": "^0.10.1" }, "peerDependencies": { "@emnapi/core": "^1.7.1", "@emnapi/runtime": "^1.7.1" } }, "sha512-3NQNNgA1YSlJb/kMH1ildASP9HW7/7kYnRI2szWJaofaS1hWmbGI4H+d3+22aGzXXN9IJ+n+GiFVcGipJP18ow=="],
 
-    "@nazka/map-gl-js-spiderfy": ["@nazka/map-gl-js-spiderfy@1.2.10", "", {}, "sha512-Y0nOKMM9+9ojHm3Iv3Ss1wo2WDtl9VqgyMK92ICM621EeRfJ+ZqaIuGjTivMCAdJbqPDVNZCWHfCRU+wKSbMmA=="],
+    "@nazka/map-gl-js-spiderfy": ["@nazka/map-gl-js-spiderfy@2.0.0", "", {}, "sha512-puFWuTXtsoFKEFlmaF1EcPhRZRIuvsGwuYmVPNT0nTbVHXC//jKJa57uxfwVps01AQJBiyewQ30ElUzv8Kp3fg=="],
 
     "@noble/ciphers": ["@noble/ciphers@1.3.0", "", {}, "sha512-2I0gnIVPtfnMw9ee9h1dJG7tp81+8Ob3OJb3Mv37rx5L40/b0i7djjCVvGOVqc9AEIQyvyu1i6ypKdFw8R8gQw=="],
 
