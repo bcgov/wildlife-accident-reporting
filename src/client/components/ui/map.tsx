@@ -1571,8 +1571,9 @@ function MapClusterLayer<
         features?: MapLibreGL.MapGeoJSONFeature[];
       }
     ) => {
-      // Near max cluster zoom, let spiderfy handle the click
-      if (spiderfyEnabled && map.getZoom() >= clusterMaxZoom - 1) return;
+      // When spiderfy is enabled, the Spiderfy instance owns cluster clicks
+      // (both zoom-to-expansion and fan-out), so skip this handler entirely.
+      if (spiderfyEnabled) return;
 
       const features = map.queryRenderedFeatures(e.point, {
         layers: [clusterLayerId],
@@ -1776,8 +1777,7 @@ function MapClusterLayer<
           coords,
         );
       },
-      minZoomLevel: clusterMaxZoom - 1,
-      zoomIncrement: 0,
+      forceSpiderifyMinZoom: clusterMaxZoom - 1,
       closeOnLeafClick: false,
       onLeafHover: (leaf: GeoJSON.Feature | null) => {
         const c = map.getCanvas().style.cursor;
