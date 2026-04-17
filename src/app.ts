@@ -4,7 +4,15 @@ import FastifyFormBody from '@fastify/formbody'
 import FastifyVite from '@fastify/vite'
 import type { FastifyInstance, FastifyPluginOptions } from 'fastify'
 import fp from 'fastify-plugin'
-import { serializerCompiler, validatorCompiler } from 'fastify-zod-openapi'
+import {
+  createSerializerCompiler,
+  validatorCompiler,
+} from 'fastify-zod-openapi'
+
+// fast-json-stringify is slower than native JSON.stringify on Bun
+const serializerCompiler = createSerializerCompiler({
+  stringify: JSON.stringify,
+})
 
 async function serviceApp(
   fastify: FastifyInstance,
