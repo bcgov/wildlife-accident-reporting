@@ -94,7 +94,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^4.1.0",
-    "fastify-cli": "^7.4.1",
+    "fastify-cli": "^8.0.0",
     "fastify-tsconfig": "^3.0.0",
     "keycloak-js": "^26.2.3",
     "kysely-codegen": "^0.20.0",
