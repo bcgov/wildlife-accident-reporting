@@ -58,6 +58,11 @@ const createOpenapiConfig = (fastify: FastifyInstance) => {
           name: 'Service Areas',
           description: 'Highway maintenance service area boundaries',
         },
+        {
+          name: 'Internal',
+          description:
+            'Cluster-internal endpoints not exposed via ingress. No authentication.',
+        },
       ],
       components: {
         securitySchemes: {
