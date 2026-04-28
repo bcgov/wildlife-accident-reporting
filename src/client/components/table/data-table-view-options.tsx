@@ -31,9 +31,7 @@ export function DataTableViewOptions<TData>({
         <TooltipTrigger
           render={
             <DropdownMenuTrigger
-              render={
-                <Button variant="outline" size="sm" className="ml-auto h-8" />
-              }
+              render={<Button variant="outline" size="sm" />}
             />
           }
         >

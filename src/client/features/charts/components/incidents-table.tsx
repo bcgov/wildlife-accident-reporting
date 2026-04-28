@@ -19,6 +19,7 @@ import { DataTableColumnHeader } from '@/components/table/data-table-column-head
 import { DataTablePagination } from '@/components/table/data-table-pagination'
 import { DataTableToolbar } from '@/components/table/data-table-toolbar'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -34,7 +35,6 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
-import { useLocalStorage } from '@/hooks/use-local-storage'
 import { useIncidentLocateStore } from '@/stores/incident-locate-store'
 import { useTabStore } from '@/stores/tab-store'
 
@@ -288,10 +288,6 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
   const [columnVisibility, setColumnVisibility] =
     useState<VisibilityState>(DEFAULT_VISIBILITY)
   const [globalFilter, setGlobalFilter] = useState('')
-  const [pageSize, setPageSize] = useLocalStorage(
-    'wisr-table-incidents-pageSize',
-    20,
-  )
 
   const visibleKeys = useMemo(
     () =>
@@ -313,7 +309,7 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
   const table = useReactTable({
     data: incidents,
     columns,
-    initialState: { pagination: { pageSize } },
+    initialState: { pagination: { pageSize: 20 } },
     state: { sorting, columnVisibility, globalFilter },
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -336,12 +332,13 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
   })
 
   const filteredRowCount = table.getFilteredRowModel().rows.length
-  const isFiltered = !!globalFilter
 
   return (
-    <div className="w-full space-y-4">
+    <Card className="gap-0 py-0 overflow-hidden">
       <DataTableToolbar
         table={table}
+        totalRows={incidents.length}
+        filteredRowCount={filteredRowCount}
         searchPlaceholder="Search species, town, area..."
         exportFilename="wisr-incidents.csv"
         columnLabels={{
@@ -363,7 +360,7 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
         }}
       />
 
-      <div className="rounded-md border">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -408,7 +405,7 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
                 >
                   <div className="text-muted-foreground">
                     <p>No incident records found</p>
-                    <p className="text-xs mt-1">
+                    <p className="mt-1 text-xs">
                       Try adjusting your filters or date range
                     </p>
                   </div>
@@ -419,11 +416,7 @@ export function IncidentsTable({ incidents, isLoading }: IncidentsTableProps) {
         </Table>
       </div>
 
-      <DataTablePagination
-        table={table}
-        totalRows={isFiltered ? filteredRowCount : incidents.length}
-        onPageSizeChange={setPageSize}
-      />
-    </div>
+      <DataTablePagination table={table} />
+    </Card>
   )
 }

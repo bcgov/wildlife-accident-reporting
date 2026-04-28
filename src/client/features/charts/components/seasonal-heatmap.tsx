@@ -1,6 +1,7 @@
-import { useState } from 'react'
+import { type ReactNode, useState } from 'react'
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -27,6 +28,7 @@ const MONTH_LABELS = [
 type SeasonalHeatmapProps = {
   data: SeasonalHeatmapRow[]
   isLoading: boolean
+  toolbar?: ReactNode
 }
 
 type TooltipState = {
@@ -39,7 +41,11 @@ type TooltipState = {
   flipBelow: boolean
 }
 
-export function SeasonalHeatmap({ data, isLoading }: SeasonalHeatmapProps) {
+export function SeasonalHeatmap({
+  data,
+  isLoading,
+  toolbar,
+}: SeasonalHeatmapProps) {
   const chartHeight = 'clamp(280px, 30vh, 450px)'
   const [tooltip, setTooltip] = useState<TooltipState | null>(null)
 
@@ -50,6 +56,7 @@ export function SeasonalHeatmap({ data, isLoading }: SeasonalHeatmapProps) {
         <CardDescription>
           Incident counts by month, color intensity normalized per species
         </CardDescription>
+        {toolbar && <CardAction>{toolbar}</CardAction>}
       </CardHeader>
       <CardContent>
         {isLoading ? (

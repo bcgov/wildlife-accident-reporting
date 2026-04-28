@@ -120,17 +120,24 @@ function IncidentsView({
     )
   }
 
+  const toolbar = (
+    <ChartToolbar
+      bucket={bucket}
+      onBucketChange={setBucket}
+      speciesKeys={speciesKeys}
+      config={chartConfig}
+    />
+  )
+
   return (
     <>
       <KpiCards summary={summary} isLoading={isLoading} />
-      <ChartToolbar
-        bucket={bucket}
-        onBucketChange={setBucket}
-        speciesKeys={speciesKeys}
-        config={chartConfig}
-      />
       {bucket === 'seasonal' ? (
-        <SeasonalHeatmap data={bySeasonal.rows} isLoading={isLoading} />
+        <SeasonalHeatmap
+          data={bySeasonal.rows}
+          isLoading={isLoading}
+          toolbar={toolbar}
+        />
       ) : (
         <SpeciesBarChart
           data={rows}
@@ -138,6 +145,7 @@ function IncidentsView({
           config={chartConfig}
           isLoading={isLoading}
           monthlyUnavailable={monthlyUnavailable}
+          toolbar={toolbar}
         />
       )}
       <IncidentsTable incidents={incidents} isLoading={isLoading} />
@@ -173,16 +181,18 @@ function DensityView({
   return (
     <>
       <DensityKpiCards summary={summary} isLoading={isLoading} />
-      <DensityToolbar
-        densityMode={densityMode}
-        onDensityModeChange={onDensityModeChange}
-      />
       <DensityBarChart
         segments={segments}
         densityMode={densityMode}
         isLoading={isLoading}
         onBarClick={(id) =>
           setHighlightedSegment((prev) => (prev === id ? null : id))
+        }
+        toolbar={
+          <DensityToolbar
+            densityMode={densityMode}
+            onDensityModeChange={onDensityModeChange}
+          />
         }
       />
       <DensityTable

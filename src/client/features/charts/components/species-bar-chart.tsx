@@ -1,8 +1,10 @@
 import { TriangleAlertIcon } from 'lucide-react'
+import type { ReactNode } from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -24,6 +26,7 @@ type SpeciesBarChartProps = {
   config: ChartConfig
   isLoading: boolean
   monthlyUnavailable: boolean
+  toolbar?: ReactNode
 }
 
 export function SpeciesBarChart({
@@ -32,6 +35,7 @@ export function SpeciesBarChart({
   config,
   isLoading,
   monthlyUnavailable,
+  toolbar,
 }: SpeciesBarChartProps) {
   const chartHeight = 'clamp(280px, 30vh, 450px)'
 
@@ -42,6 +46,7 @@ export function SpeciesBarChart({
         <CardDescription>
           Top 9 species shown per bar, smaller counts grouped as Remaining
         </CardDescription>
+        {toolbar && <CardAction>{toolbar}</CardAction>}
       </CardHeader>
       <CardContent>
         {isLoading ? (

@@ -1,7 +1,6 @@
 import { format, parseISO } from 'date-fns'
 import { CalendarIcon, RotateCcw, X } from 'lucide-react'
 import { useMemo } from 'react'
-import { NavUser } from '@/components/nav-user'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Calendar } from '@/components/ui/calendar'
@@ -21,6 +20,7 @@ import {
   SidebarHeader,
 } from '@/components/ui/sidebar'
 import { Skeleton } from '@/components/ui/skeleton'
+import { NavUser } from '@/components/user-menu'
 import { useFilters } from '@/hooks/use-filters'
 import { useIncidents } from '@/hooks/use-incidents'
 import { useFilterStore } from '@/stores/filter-store'
@@ -147,26 +147,24 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
 
   return (
     <Sidebar
-      variant="inset"
+      variant="sidebar"
       collapsible="offcanvas"
-      className="top-(--header-height) h-[calc(100svh-var(--header-height))]!"
+      className="inset-y-auto! top-[calc(var(--header-height)+9px)]! h-[calc(100svh-var(--header-height)-9px)]!"
       {...props}
     >
-      <SidebarHeader>
-        <div className="flex items-center justify-between px-2">
-          <span className="text-lg font-semibold">Filters</span>
-          {hasSelections && (
-            <Button
-              variant="destructive"
-              size="xs"
-              onClick={store.clearAll}
-              aria-label="Clear all filters"
-            >
-              <RotateCcw className="size-3" />
-              Clear
-            </Button>
-          )}
-        </div>
+      <SidebarHeader className="flex h-14 flex-row items-center justify-between border-b px-4 py-0">
+        <span className="text-base font-bold">Filters</span>
+        {hasSelections && (
+          <Button
+            variant="destructive"
+            size="xs"
+            onClick={store.clearAll}
+            aria-label="Clear all filters"
+          >
+            <RotateCcw className="size-3" />
+            Clear
+          </Button>
+        )}
       </SidebarHeader>
       <SidebarContent className="gap-0">
         <SidebarGroup className="px-2 py-1">
@@ -330,11 +328,15 @@ export function AppSidebar(props: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         )}
       </SidebarContent>
-      <SidebarFooter>
-        <p className="px-2 text-xs text-muted-foreground">
-          {incidents?.total.toLocaleString() ?? '...'} observations match
-          current filters
-        </p>
+      <SidebarFooter className="gap-2.5 border-t bg-card px-4 py-3">
+        {incidents?.total !== undefined && (
+          <p className="text-xs text-muted-foreground">
+            <span className="font-bold text-primary">
+              {incidents.total.toLocaleString()}
+            </span>{' '}
+            observations match current filters
+          </p>
+        )}
         <NavUser />
       </SidebarFooter>
     </Sidebar>

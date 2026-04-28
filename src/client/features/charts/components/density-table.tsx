@@ -17,6 +17,7 @@ import { DataTableColumnHeader } from '@/components/table/data-table-column-head
 import { DataTablePagination } from '@/components/table/data-table-pagination'
 import { DataTableToolbar } from '@/components/table/data-table-toolbar'
 import { Button } from '@/components/ui/button'
+import { Card } from '@/components/ui/card'
 import {
   Table,
   TableBody,
@@ -34,7 +35,6 @@ import {
 } from '@/components/ui/tooltip'
 import type { DensityMode } from '@/features/map/store/layer-store'
 import { useLayerStore } from '@/features/map/store/layer-store'
-import { useLocalStorage } from '@/hooks/use-local-storage'
 import type { DensitySegment } from '@/lib/density-api'
 import { useSegmentLocateStore } from '@/stores/segment-locate-store'
 import { useTabStore } from '@/stores/tab-store'
@@ -259,10 +259,6 @@ export function DensityTable({
   const [columnVisibility, setColumnVisibility] =
     useState<VisibilityState>(DEFAULT_VISIBILITY)
   const [globalFilter, setGlobalFilter] = useState('')
-  const [pageSize, setPageSize] = useLocalStorage(
-    'wisr-table-density-pageSize',
-    20,
-  )
 
   const rows: DensityRow[] = useMemo(
     () =>
@@ -302,7 +298,7 @@ export function DensityTable({
   const table = useReactTable({
     data: rows,
     columns,
-    initialState: { pagination: { pageSize } },
+    initialState: { pagination: { pageSize: 20 } },
     state: { sorting, columnVisibility, globalFilter },
     onSortingChange: setSorting,
     onColumnVisibilityChange: setColumnVisibility,
@@ -353,12 +349,13 @@ export function DensityTable({
   })
 
   const filteredRowCount = table.getFilteredRowModel().rows.length
-  const isFiltered = !!globalFilter
 
   return (
-    <div className="w-full space-y-4">
+    <Card className="gap-0 py-0 overflow-hidden">
       <DataTableToolbar
         table={table}
+        totalRows={rows.length}
+        filteredRowCount={filteredRowCount}
         searchPlaceholder="Search segment, highway..."
         exportFilename="wisr-lki-density.csv"
         columnLabels={{
@@ -375,7 +372,7 @@ export function DensityTable({
         }}
       />
 
-      <div className="rounded-md border">
+      <div className="overflow-x-auto">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
@@ -443,11 +440,7 @@ export function DensityTable({
         </Table>
       </div>
 
-      <DataTablePagination
-        table={table}
-        totalRows={isFiltered ? filteredRowCount : rows.length}
-        onPageSizeChange={setPageSize}
-      />
-    </div>
+      <DataTablePagination table={table} />
+    </Card>
   )
 }

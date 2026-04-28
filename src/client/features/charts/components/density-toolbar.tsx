@@ -23,20 +23,23 @@ export function DensityToolbar({
   onDensityModeChange,
 }: DensityToolbarProps) {
   return (
-    <div className="flex items-center justify-between gap-2">
+    <div className="flex items-center justify-end gap-3">
       <DensityLegend />
       <Select
         value={densityMode}
         onValueChange={(v) => v && onDensityModeChange(v as DensityMode)}
       >
-        <SelectTrigger className="w-32">
+        <SelectTrigger size="sm" className="w-28">
           <SelectValue>
             {(value: DensityMode) => DENSITY_MODE_LABELS[value]}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="weighted">Weighted</SelectItem>
-          <SelectItem value="raw">Raw count</SelectItem>
+          {Object.entries(DENSITY_MODE_LABELS).map(([value, label]) => (
+            <SelectItem key={value} value={value}>
+              {label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
     </div>

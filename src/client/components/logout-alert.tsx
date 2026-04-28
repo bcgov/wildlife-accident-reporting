@@ -32,7 +32,7 @@ export function LogoutAlert({ open, onOpenChange }: LogoutAlertProps) {
           <CredenzaClose asChild>
             <Button variant="outline">Cancel</Button>
           </CredenzaClose>
-          <Button variant="destructive-filled" onClick={logout}>
+          <Button variant="destructive" onClick={logout}>
             Confirm
           </Button>
         </CredenzaFooter>

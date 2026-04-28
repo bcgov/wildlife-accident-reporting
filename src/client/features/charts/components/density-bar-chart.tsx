@@ -1,7 +1,8 @@
-import { useMemo } from 'react'
+import { type ReactNode, useMemo } from 'react'
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis } from 'recharts'
 import {
   Card,
+  CardAction,
   CardContent,
   CardDescription,
   CardHeader,
@@ -43,6 +44,7 @@ type DensityBarChartProps = {
   densityMode: DensityMode
   isLoading: boolean
   onBarClick?: (segmentName: string) => void
+  toolbar?: ReactNode
 }
 
 export function DensityBarChart({
@@ -50,6 +52,7 @@ export function DensityBarChart({
   densityMode,
   isLoading,
   onBarClick,
+  toolbar,
 }: DensityBarChartProps) {
   const chartHeight = 'clamp(280px, 30vh, 450px)'
 
@@ -93,6 +96,7 @@ export function DensityBarChart({
       <CardHeader>
         <CardTitle>Top Segments</CardTitle>
         <CardDescription>{description}</CardDescription>
+        {toolbar && <CardAction>{toolbar}</CardAction>}
       </CardHeader>
       <CardContent>
         {isLoading ? (

@@ -88,7 +88,7 @@ export function SearchAddress() {
 
   return (
     <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger className="ml-auto flex min-w-0 flex-1 items-center justify-between rounded-md border border-input bg-background px-3 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/40 md:flex-none md:w-80">
+      <PopoverTrigger className="flex w-80 min-w-0 items-center justify-between rounded-md border border-input bg-background px-3 py-1.5 text-sm transition-colors hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/40">
         <span className="truncate">
           {location ? location.address : 'Search for a place...'}
         </span>

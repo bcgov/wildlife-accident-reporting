@@ -45,21 +45,25 @@ export function ChartToolbar({
   return (
     <div className="flex items-center justify-end gap-2">
       <Select value={bucket} onValueChange={(v) => v && onBucketChange(v)}>
-        <SelectTrigger className="w-32">
+        <SelectTrigger size="sm" className="w-28">
           <SelectValue>
             {(value: TimeBucket) => TIME_BUCKET_LABELS[value]}
           </SelectValue>
         </SelectTrigger>
         <SelectContent>
-          <SelectItem value="year">Yearly</SelectItem>
-          <SelectItem value="month">Monthly</SelectItem>
-          <SelectItem value="seasonal">Seasonal</SelectItem>
+          {Object.entries(TIME_BUCKET_LABELS).map(([value, label]) => (
+            <SelectItem key={value} value={value}>
+              {label}
+            </SelectItem>
+          ))}
         </SelectContent>
       </Select>
       <Popover>
         <Tooltip>
           <TooltipTrigger
-            render={<PopoverTrigger render={<Button variant="outline" />} />}
+            render={
+              <PopoverTrigger render={<Button variant="outline" size="sm" />} />
+            }
           >
             <Palette className="size-4" />
             Legend
@@ -68,7 +72,7 @@ export function ChartToolbar({
         </Tooltip>
         <PopoverContent align="end" className="w-48">
           <PopoverHeader>
-            <PopoverTitle>Species Legend</PopoverTitle>
+            <PopoverTitle>Species legend</PopoverTitle>
           </PopoverHeader>
           <div className="flex flex-col gap-1.5">
             {speciesKeys
