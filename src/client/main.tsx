@@ -28,25 +28,22 @@ if (rootElement === null) throw new Error('Root element not found')
 const root = createRoot(rootElement)
 root.render(<App />)
 
+keycloak.onTokenExpired = () => {
+  keycloak.updateToken(5).catch(() => {
+    keycloak.login({ redirectUri: window.location.href })
+  })
+}
+
+const isProd = import.meta.env.PROD
+
 keycloak
   .init({
     checkLoginIframe: false,
     pkceMethod: 'S256',
+    onLoad: isProd ? 'check-sso' : undefined,
+    silentCheckSsoRedirectUri: isProd
+      ? `${window.location.origin}/silent-check-sso.html`
+      : undefined,
   })
-  .then((authenticated) => {
-    if (authenticated) {
-      useAuthStore.getState().initialize(true)
-    } else {
-      keycloak
-        .login({
-          redirectUri: window.location.origin,
-          idpHint: 'azureidir',
-        })
-        .catch(() => {
-          useAuthStore.getState().initialize(false)
-        })
-    }
-  })
-  .catch(() => {
-    useAuthStore.getState().initialize(false)
-  })
+  .then((authenticated) => useAuthStore.getState().initialize(authenticated))
+  .catch(() => useAuthStore.getState().initialize(false))

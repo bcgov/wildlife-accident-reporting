@@ -9,6 +9,7 @@ async function clientConfigInjection(fastify: FastifyInstance) {
     keycloakUrl: fastify.config.keycloakUrl,
     keycloakRealm: fastify.config.keycloakRealm,
     keycloakClientId: fastify.config.keycloakClientId,
+    siteminderLogoutUrl: fastify.config.siteminderLogoutUrl,
     googleMapsApiKey: fastify.config.googleMapsApiKey,
   }
 

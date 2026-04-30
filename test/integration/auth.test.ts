@@ -2,10 +2,7 @@ import type { FastifyInstance } from 'fastify'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 import { build } from '../helpers/app.js'
 import {
-  azureIdirToken,
-  bceidToken,
   expiredToken,
-  generateToken,
   idirToken,
   tamperedToken,
   wrongKeyToken,
@@ -101,40 +98,6 @@ describe('Auth Security', () => {
         headers: { authorization: `Bearer ${idirToken()}` },
       })
       expect(res.statusCode).not.toBe(401)
-    })
-  })
-
-  describe('IDP Enforcement', () => {
-    it('accepts azureidir identity provider', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: protectedUrl,
-        headers: { authorization: `Bearer ${azureIdirToken()}` },
-      })
-      expect(res.statusCode).not.toBe(401)
-    })
-
-    it('rejects bceidbasic identity provider', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: protectedUrl,
-        headers: { authorization: `Bearer ${bceidToken()}` },
-      })
-      expect(res.statusCode).toBe(401)
-      expect(JSON.parse(res.payload).message).toBe(
-        'IDIR authentication required',
-      )
-    })
-
-    it('rejects missing identity_provider claim', async () => {
-      const res = await app.inject({
-        method: 'GET',
-        url: protectedUrl,
-        headers: {
-          authorization: `Bearer ${generateToken({ identity_provider: undefined })}`,
-        },
-      })
-      expect(res.statusCode).toBe(401)
     })
   })
 

@@ -2,6 +2,7 @@ interface ClientConfig {
   keycloakUrl: string
   keycloakRealm: string
   keycloakClientId: string
+  siteminderLogoutUrl: string
   googleMapsApiKey: string
 }
 

@@ -84,14 +84,6 @@ export function idirToken(overrides?: TokenClaims): string {
   return generateToken({ identity_provider: 'idir', ...overrides })
 }
 
-export function azureIdirToken(overrides?: TokenClaims): string {
-  return generateToken({ identity_provider: 'azureidir', ...overrides })
-}
-
-export function bceidToken(overrides?: TokenClaims): string {
-  return generateToken({ identity_provider: 'bceidbasic', ...overrides })
-}
-
 export function expiredToken(claims?: TokenClaims): string {
   const past = Math.floor(Date.now() / 1000) - 3600
   return generateToken({ exp: past, iat: past - 3600, ...claims })

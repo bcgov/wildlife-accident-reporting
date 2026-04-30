@@ -3,14 +3,13 @@
   "compilerOptions": {
     "noEmit": true,
     "rootDir": "..",
-    "baseUrl": "..",
     "paths": {
-      "@root/*": ["./src/*"],
-      "@routes/*": ["./src/routes/*"],
-      "@utils/*": ["./src/utils/*"],
-      "@schemas/*": ["./src/schemas/*"],
-      "@services/*": ["./src/services/*"],
-      "@types/*": ["./src/types/*"]
+      "@root/*": ["../src/*"],
+      "@routes/*": ["../src/routes/*"],
+      "@utils/*": ["../src/utils/*"],
+      "@schemas/*": ["../src/schemas/*"],
+      "@services/*": ["../src/services/*"],
+      "@types/*": ["../src/types/*"]
     }
   },
   "include": ["**/*", "../src/**/*"],

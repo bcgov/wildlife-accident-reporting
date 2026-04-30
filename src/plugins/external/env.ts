@@ -10,6 +10,7 @@ const schema = {
     'KEYCLOAK_URL',
     'KEYCLOAK_REALM',
     'KEYCLOAK_CLIENT_ID',
+    'SITEMINDER_LOGOUT_URL',
     'GOOGLE_MAPS_API_KEY',
     'HMCR_ID',
     'HMCR_SECRET',
@@ -79,6 +80,9 @@ const schema = {
     KEYCLOAK_CLIENT_ID: {
       type: 'string',
     },
+    SITEMINDER_LOGOUT_URL: {
+      type: 'string',
+    },
     GOOGLE_MAPS_API_KEY: {
       type: 'string',
     },
@@ -115,6 +119,7 @@ interface RawEnv {
   KEYCLOAK_URL: string
   KEYCLOAK_REALM: string
   KEYCLOAK_CLIENT_ID: string
+  SITEMINDER_LOGOUT_URL: string
   GOOGLE_MAPS_API_KEY: string
   HMCR_ID: string
   HMCR_SECRET: string
@@ -158,6 +163,7 @@ export default fp(
       keycloakUrl: raw.KEYCLOAK_URL,
       keycloakRealm: raw.KEYCLOAK_REALM,
       keycloakClientId: raw.KEYCLOAK_CLIENT_ID,
+      siteminderLogoutUrl: raw.SITEMINDER_LOGOUT_URL,
       googleMapsApiKey: raw.GOOGLE_MAPS_API_KEY,
       hmcrId: raw.HMCR_ID,
       hmcrSecret: raw.HMCR_SECRET,
