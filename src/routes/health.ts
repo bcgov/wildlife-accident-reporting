@@ -10,7 +10,7 @@ const plugin: FastifyPluginAsyncZodOpenApi = async (fastify) => {
         summary: 'Health check endpoint',
         operationId: 'getHealth',
         description:
-          'Returns the health status of the application. Used by Docker HEALTHCHECK and orchestrators. Does not require authentication.',
+          'Returns the health status of the application. Used by Docker HEALTHCHECK and kubelet probes. Internal: not exposed via ingress.',
         response: {
           200: HealthCheckResponseSchema,
           503: HealthCheckResponseSchema,
