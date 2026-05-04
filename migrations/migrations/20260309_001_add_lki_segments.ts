@@ -88,12 +88,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     .column('lki_segment_id')
     .execute()
 
-  // Functional index for geography-based distance queries against incidents
-  await sql`
-    CREATE INDEX idx_incidents_geom_geog
-    ON incidents USING gist (geography(geom))
-  `.execute(db)
-
   // Assign nearest LKI segment within 200m on incident insert/update.
   // This trigger fires after trg_incidents_geom (alphabetical ordering)
   // which has already computed geom from lat/lng.
@@ -194,7 +188,6 @@ export async function down(db: Kysely<never>): Promise<void> {
   await sql`DROP FUNCTION IF EXISTS assign_nearest_lki_segment() CASCADE`.execute(
     db,
   )
-  await db.schema.dropIndex('idx_incidents_geom_geog').execute()
   await db.schema.alterTable('incidents').dropColumn('lki_segment_id').execute()
   await db.schema.dropTable('lki_segments').cascade().execute()
   await db.schema.alterTable('species').dropColumn('body_size').execute()

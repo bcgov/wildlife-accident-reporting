@@ -239,12 +239,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     .execute()
 
   await db.schema
-    .createIndex('idx_incidents_year')
-    .on('incidents')
-    .column('year')
-    .execute()
-
-  await db.schema
     .createIndex('idx_incidents_species_id')
     .on('incidents')
     .column('species_id')
@@ -254,12 +248,6 @@ export async function up(db: Kysely<never>): Promise<void> {
     .createIndex('idx_incidents_service_area_id')
     .on('incidents')
     .column('service_area_id')
-    .execute()
-
-  await db.schema
-    .createIndex('idx_incidents_hmcr_record_id')
-    .on('incidents')
-    .column('hmcr_record_id')
     .execute()
 
   await db.schema
