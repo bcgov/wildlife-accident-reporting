@@ -1,0 +1,54 @@
+{{- if and .Values.backend.enabled .Values.backend.cron.enabled }}
+{{- range $name, $job := .Values.backend.cron.jobs }}
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ include "backend.fullname" $ }}-{{ $name | kebabcase }}
+  namespace: {{ $.Release.Namespace }}
+  labels:
+    {{- include "backend.labels" $ | nindent 4 }}
+spec:
+  schedule: {{ $job.schedule | quote }}
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 3
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        metadata:
+          labels:
+            {{- include "backend.labels" $ | nindent 12 }}
+        spec:
+          restartPolicy: Never
+          securityContext:
+            runAsNonRoot: true
+          containers:
+            - name: sync
+              image: "{{ $.Values.backend.cron.image.repository }}:{{ $.Values.backend.cron.image.tag }}"
+              imagePullPolicy: IfNotPresent
+              securityContext:
+                runAsNonRoot: true
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+              args:
+                - "-sS"
+                - "--fail-with-body"
+                - "--max-time"
+                - "600"
+                - "-X"
+                - "POST"
+                - "http://{{ include "backend.fullname" $ }}.{{ $.Release.Namespace }}.svc.cluster.local:{{ $.Values.backend.service.port }}{{ $job.endpoint }}"
+              resources:
+                requests:
+                  cpu: 50m
+                  memory: 64Mi
+                limits:
+                  cpu: 500m
+                  memory: 256Mi
+{{- end }}
+{{- end }}
