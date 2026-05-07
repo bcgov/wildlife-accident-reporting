@@ -35,7 +35,7 @@ crunchy: # base values are sized for PR ephemeral environments; values-prod.yml 
     dataVolumeClaimSpec:
       storage: 350Mi
       storageClassName: netapp-block-standard
-      walStorage: 300Mi
+      walStorage: 550Mi
 
     requests:
       cpu: 50m
