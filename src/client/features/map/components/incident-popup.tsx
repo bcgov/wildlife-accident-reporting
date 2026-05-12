@@ -5,7 +5,7 @@ import { config } from '@/lib/config'
 import type { IncidentProperties } from '../index'
 import { getStreetViewUrl } from '../lib/street-view'
 
-const GOOGLE_MAPS_API_KEY = config.googleMapsApiKey
+const GOOGLE_MAPS_API_KEY = config.googleMapsClientApiKey
 
 function titleCase(value: string): string {
   return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase()

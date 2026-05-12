@@ -196,7 +196,7 @@ function LocateSegment() {
   return null
 }
 
-const googleMapsApiKey = config.googleMapsApiKey
+const googleMapsApiKey = config.googleMapsClientApiKey
 
 export function Component() {
   const { data: response } = useIncidents()

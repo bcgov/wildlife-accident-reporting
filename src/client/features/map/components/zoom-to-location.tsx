@@ -12,7 +12,7 @@ import { config } from '@/lib/config'
 import { useLocationStore } from '@/stores/location-store'
 import { getStreetViewUrl } from '../lib/street-view'
 
-const GOOGLE_MAPS_API_KEY = config.googleMapsApiKey
+const GOOGLE_MAPS_API_KEY = config.googleMapsClientApiKey
 
 type DetailRowProps = {
   label: string

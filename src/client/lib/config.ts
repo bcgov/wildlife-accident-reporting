@@ -3,7 +3,7 @@ interface ClientConfig {
   keycloakRealm: string
   keycloakClientId: string
   siteminderLogoutUrl: string
-  googleMapsApiKey: string
+  googleMapsClientApiKey: string
 }
 
 declare global {

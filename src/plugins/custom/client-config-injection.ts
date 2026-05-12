@@ -10,7 +10,7 @@ async function clientConfigInjection(fastify: FastifyInstance) {
     keycloakRealm: fastify.config.keycloakRealm,
     keycloakClientId: fastify.config.keycloakClientId,
     siteminderLogoutUrl: fastify.config.siteminderLogoutUrl,
-    googleMapsApiKey: fastify.config.googleMapsApiKey,
+    googleMapsClientApiKey: fastify.config.googleMapsClientApiKey,
   }
 
   // Escape '<' so a value containing '</script>' cannot break out of the tag.
