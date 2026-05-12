@@ -11,6 +11,7 @@ function getErrorMessage(error: Error): string {
 export const queryClient = new QueryClient({
   queryCache: new QueryCache({
     onError: (error, query) => {
+      console.error('[query]', query.queryKey, error)
       toast.error(getErrorMessage(error), {
         id: `query-error-${String(query.queryHash)}`,
       })
@@ -19,6 +20,7 @@ export const queryClient = new QueryClient({
   mutationCache: new MutationCache({
     onError: (error, _variables, _context, mutation) => {
       if (mutation.meta?.suppressGlobalError) return
+      console.error('[mutation]', mutation.options.mutationKey, error)
       toast.error(getErrorMessage(error), {
         id: `mutation-error-${String(mutation.mutationId)}`,
       })
