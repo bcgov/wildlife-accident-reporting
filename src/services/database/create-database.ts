@@ -15,11 +15,13 @@ interface CreateDatabaseOptions {
 
 export function createDatabase(options?: CreateDatabaseOptions): Kysely<DB> {
   const url = options?.url ?? process.env.DATABASE_URL
+  // Capped so total across replicas fits under PgBouncer's per-user pool.
+  const max = options?.max ?? 10
 
   return new Kysely<DB>({
     dialect: new PostgresJSDialect({
       postgres: url
-        ? new SQL(url)
+        ? new SQL({ url, max })
         : new SQL({
             hostname: options?.hostname ?? process.env.DB_HOST ?? 'localhost',
             port: options?.port ?? (Number(process.env.DB_PORT) || 5432),
@@ -27,8 +29,7 @@ export function createDatabase(options?: CreateDatabaseOptions): Kysely<DB> {
             password:
               options?.password ?? process.env.DB_PASSWORD ?? 'postgres',
             database: options?.database ?? process.env.DB_NAME ?? 'wisr',
-            // Capped so total across replicas fits under PgBouncer's per-user pool.
-            max: options?.max ?? 10,
+            max,
           }),
     }),
   })
