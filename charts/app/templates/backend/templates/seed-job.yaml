@@ -39,6 +39,17 @@ spec:
                 name: {{ .Release.Name }}-migrations
             - secretRef:
                 name: {{ .Values.backend.seed.secretName }}
+          env:
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.databaseAlias }}-pguser-postgres
+                  key: user
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.global.databaseAlias }}-pguser-postgres
+                  key: password
           volumeMounts:
             - name: tmp
               mountPath: /tmp
